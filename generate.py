@@ -366,4 +366,5 @@ def generate():
 if __name__ == '__main__':
   with open(OUTPUT_FILENAME, 'w') as fd:
     fd.write(generate())
+    fd.write('\n')
   log("Output " + OUTPUT_FILENAME)
