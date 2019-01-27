@@ -12,4 +12,4 @@ tester: test.cpp widechar_width.h | wcwidth9.h
 	clang++ -std=c++11 test.cpp -o tester
 
 clean:
-	rm -f tester
+	rm -f tester UnicodeData.txt emoji-data.txt EastAsianWidth.txt
