@@ -72,6 +72,11 @@ struct {p}range {{
   int32_t hi;
 }};
 
+/* Simple ASCII characters - used a lot, so we check them first. */
+static const struct {p}range {p}ascii_table[] = {{
+    {ascii}
+}};
+
 /* Private usage range. */
 static const struct {p}range {p}private_table[] = {{
     {private}
@@ -117,6 +122,8 @@ bool {p}in_table(const Collection &arr, int32_t c) {{
 
 /* Return the width of character c, or a special negative value. */
 int {p}wcwidth(wchar_t c) {{
+    if ({p}in_table({p}ascii_table, c))
+        return 1;
     if ({p}in_table({p}private_table, c))
         return {p}private_use;
     if ({p}in_table({p}nonprint_table, c))
@@ -346,6 +353,10 @@ def generate():
     """ Return a carray string of codepoints with the given width. """
     return codepoints_to_carray_str([cp for cp in cps if cp.width == width])
 
+  def ascii_codepoints():
+    """ Return a carray string of codepoints with the given width. """
+    return codepoints_to_carray_str([cp for cp in cps if cp.codepoint < 0x7F and cp.codepoint >= 0x20])
+
   fields = {
       'p': CPP_PREFIX,
       'filename': OUTPUT_FILENAME,
@@ -353,6 +364,7 @@ def generate():
       'unicode_hash': unicode_hash,
       'eaw_hash': eaw_hash,
       'emoji_hash': emoji_hash,
+      'ascii': ascii_codepoints(),
       'private': categories([CAT_PRIVATE_USE]),
       'nonprint': categories(['Cc', 'Cf', 'Zl', 'Zp', CAT_SURROGATE]),
       'combining': categories(['Mn', 'Mc', 'Me']),
