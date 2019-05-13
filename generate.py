@@ -7,7 +7,16 @@ import hashlib
 import os.path
 import re
 import sys
-import urllib
+try:
+  #python3
+  from urllib.request import urlretrieve
+except ImportError:
+  from urllib import urlretrieve
+try:
+  #python3
+  xrange
+except NameError:
+  xrange = range
 
 UNICODE_DATA_URL = 'http://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt'
 EAW_URL = 'http://ftp.unicode.org/Public/UNIDATA/EastAsianWidth.txt'
@@ -169,7 +178,7 @@ def read_datafile(url):
   name = url.rsplit('/', 1)[-1]
   if not os.path.isfile(name):
     log("Downloading " + name)
-    urllib.urlretrieve(url, name)
+    urlretrieve(url, name)
   with open(name, 'rb') as ofile:
     data = ofile.read()
   hashval = hashlib.sha1(data).hexdigest()
