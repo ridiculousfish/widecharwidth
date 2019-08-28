@@ -21,7 +21,7 @@ except NameError:
 
 UNICODE_DATA_URL = "http://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt"
 EAW_URL = "http://ftp.unicode.org/Public/UNIDATA/EastAsianWidth.txt"
-EMOJI_DATA_URL = "https://unicode.org/Public/emoji/5.0/emoji-data.txt"
+EMOJI_DATA_URL = "https://unicode.org/Public/emoji/12.0/emoji-data.txt"
 
 # A handful of field names
 # See https://www.unicode.org/L2/L1999/UnicodeData.html
@@ -309,8 +309,17 @@ def parse_emoji_line(line):
     if len(fields_comment) != 2:
         return []
     fields, comment = fields_comment
-    version = float(re.search(r"^\s*\d+\.\d+", comment).group(0))
-    cps, _prop = fields.split(";")
+    cps, _prop = fields.split(';')
+    version = 0.0
+    fmtre = re.search(r'^\s*\d+\.\d+', comment)
+    # In later versions of emoji-data.txt there are some "reserved"
+    # entries that have "NA" instead of a Unicode version number
+    # of first use, they will now return a zero version instead of
+    # crashing the script
+    if fmtre is None:
+        return [(cp, version) for cp in hexrange_to_range(cps)]
+
+    version = float(re.search(r'^\s*\d+\.\d+', comment).group(0))
     return [(cp, version) for cp in hexrange_to_range(cps)]
 
 
@@ -321,8 +330,11 @@ def set_emoji_widths(emoji_data_lines, cps):
             # Don't consider <=1F000 values as emoji. These can only be made
             # emoji through the variation selector which interacts terribly
             # with wcwidth().
+            # Skip codepoints that have a version of 0.0 as they were marked
+            # in the emoji-data file as reserved/unused:
             if cp >= 0x1F000:
-                cps[cp].width = 2 if version >= 9.0 else WIDTH_WIDENED_IN_9
+                if version > 1.0:
+                    cps[cp].width = 2 if version >= 9.0 else WIDTH_WIDENED_IN_9
 
 
 def set_hardcoded_ranges(cps):
