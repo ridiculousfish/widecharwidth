@@ -125,12 +125,12 @@ static const struct {p}range {p}widened_table[] = {{
 template<typename Collection>
 bool {p}in_table(const Collection &arr, int32_t c) {{
     auto where = std::lower_bound(std::begin(arr), std::end(arr), c,
-        []({p}range p, wchar_t c) {{ return p.hi < c; }});
+        []({p}range p, int32_t c) {{ return p.hi < c; }});
     return where != std::end(arr) && where->lo <= c;
 }}
 
 /* Return the width of character c, or a special negative value. */
-int {p}wcwidth(wchar_t c) {{
+int {p}wcwidth(int32_t c) {{
     if ({p}in_table({p}ascii_table, c))
         return 1;
     if ({p}in_table({p}private_table, c))
