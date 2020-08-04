@@ -12,4 +12,4 @@ widechar_width.h: generate.py
 #	clang++ -std=c++11 test.cpp -o tester
 
 clean:
-	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth. widechar_width.h
+	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth.txt widechar_width.h
