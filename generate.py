@@ -38,6 +38,11 @@ CAT_PRIVATE_USE = "Co"
 # Category for surrogates.
 CAT_SURROGATE = "Cs"
 
+# Category for non-characters.
+# Note this does not appear in UnicodeData.txt.
+# See https://www.unicode.org/faq/private_use.html
+CAT_NON_CHARACTERS = "non-characters"
+
 # Maximum codepoint value.
 MAX_CODEPOINT = 0x110000
 
@@ -73,7 +78,8 @@ enum {{
   {p}ambiguous = -3,    // The character is East-Asian ambiguous width.
   {p}private_use = -4,  // The character is for private use.
   {p}unassigned = -5,   // The character is unassigned.
-  {p}widened_in_9 = -6  // Width is 1 in Unicode 8, 2 in Unicode 9+.
+  {p}widened_in_9 = -6, // Width is 1 in Unicode 8, 2 in Unicode 9+.
+  {p}non_character = -7 // The character is a noncharacter (e.g. a surrogate).
 }};
 
 /* An inclusive range of characters. */
@@ -117,6 +123,11 @@ static const struct {p}range {p}unassigned_table[] = {{
     {unassigned}
 }};
 
+/* Non-characters. */
+static const struct {p}range {p}nonchar_table[] = {{
+    {noncharacters}
+}};
+
 /* Characters that were widened from with 1 to 2 in Unicode 9. */
 static const struct {p}range {p}widened_table[] = {{
     {widenedin9}
@@ -137,6 +148,8 @@ int {p}wcwidth(uint32_t c) {{
         return {p}private_use;
     if ({p}in_table({p}nonprint_table, c))
         return {p}nonprint;
+    if ({p}in_table({p}nonchar_table, c))
+        return {p}non_character;
     if ({p}in_table({p}combining_table, c))
         return {p}combining;
     if ({p}in_table({p}doublewide_table, c))
@@ -159,6 +172,9 @@ WIDTH_AMBIGUOUS_EASTASIAN = -3
 
 # Width changed from 1 to 2 in Unicode 9.0
 WIDTH_WIDENED_IN_9 = -6
+
+# Private use characters.
+WIDTH_PRIVATE_USE = -7
 
 
 class CodePoint(object):  # pylint: disable=too-few-public-methods
@@ -256,15 +272,15 @@ def hexrange_to_range(hexrange):
 
 def parse_eaw_line(eaw_line):
     """ Return a list of tuples (codepoint, width) from an EAW line """
-    # Remove hash
-    eaw_line = eaw_line.split("#", 1)[0]
-    fields = eaw_line.strip().split(";")
+    # Remove hash.
+    line = eaw_line.split("#", 1)[0]
+    fields = line.strip().split(";")
     if len(fields) != 2:
         return []
     cps, width_type = fields
     # width_types:
     #  A: ambiguous, F: fullwidth, H: halfwidth,
-    # . N: neutral, Na: east-asian Narrow
+    #  N: neutral, Na: east-asian Narrow
     if width_type == "A":
         width = WIDTH_AMBIGUOUS_EASTASIAN
     elif width_type in ["F", "W"]:
@@ -363,6 +379,17 @@ def set_hardcoded_ranges(cps):
         for idx in xrange(first, last + 1):
             cps[idx].category = CAT_SURROGATE
 
+    # See "noncharacters" discussion at https://www.unicode.org/faq/private_use.html
+    # "Last two code points of each of the 16 supplementary planes" and also BMP (plane 0).
+    nonchar_ranges = [(0xFDD0, 0xFDEF)]
+    for plane in xrange(0, 16 + 1):
+        c = 0x10000 * plane + 0xFFFE
+        nonchar_ranges.append((c, c + 1))
+
+    for (first, last) in nonchar_ranges:
+        for idx in xrange(first, last + 1):
+            cps[idx].category = CAT_NON_CHARACTERS
+
 
 def generate():
     """ Return our widechar_width.h as a string """
@@ -406,6 +433,7 @@ def generate():
         "emoji_hash": emoji_hash,
         "ascii": ascii_codepoints(),
         "private": categories([CAT_PRIVATE_USE]),
+        "noncharacters": categories([CAT_NON_CHARACTERS]),
         "nonprint": categories(["Cc", "Cf", "Zl", "Zp", CAT_SURROGATE]),
         "combining": categories(["Mn", "Mc", "Me"]),
         "doublewide": codepoints_with_width(2),
