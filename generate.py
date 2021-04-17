@@ -102,7 +102,7 @@ static const struct {p}range {p}combining_table[] = {{
     {combining}
 }};
 
-/* Width.2 characters. */
+/* Width 2 characters. */
 static const struct {p}range {p}doublewide_table[] = {{
     {doublewide}
 }};
@@ -111,7 +111,6 @@ static const struct {p}range {p}doublewide_table[] = {{
 static const struct {p}range {p}ambiguous_table[] = {{
     {ambiguous}
 }};
-
 
 /* Unassigned characters. */
 static const struct {p}range {p}unassigned_table[] = {{
@@ -181,10 +180,10 @@ def log(msg):
 
 
 def read_datafile(url):
-    """ Download a file from url to name if not already present.
-      Return the file as a tuple (lines, sha1)
-      lines will have comment-only lines removed, sha1 is a string.
-  """
+    """Download a file from url to name if not already present.
+    Return the file as a tuple (lines, sha1)
+    lines will have comment-only lines removed, sha1 is a string.
+    """
     name = url.rsplit("/", 1)[-1]
     if not os.path.isfile(name):
         log("Downloading " + name)
@@ -198,8 +197,8 @@ def read_datafile(url):
 
 
 def set_general_categories(unicode_data, cps):
-    """ Receives lines from UnicodeData.txt,
-      and sets general categories for codepoints. """
+    """Receives lines from UnicodeData.txt,
+    and sets general categories for codepoints."""
     for line in unicode_data:
         fields = line.strip().split(";")
         if len(fields) > FIELD_CATEGORY:
@@ -245,10 +244,10 @@ def codepoints_to_carray_str(cps):
 
 
 def hexrange_to_range(hexrange):
-    """ Given a string like 1F300..1F320 representing an inclusive range,
-      return the range of codepoints.
-      If the string is like 1F321, return a range of just that element.
-  """
+    """Given a string like 1F300..1F320 representing an inclusive range,
+    return the range of codepoints.
+    If the string is like 1F321, return a range of just that element.
+    """
     fields = [int(val, 16) for val in hexrange.split("..")]
     if len(fields) == 1:
         fields += fields
@@ -383,8 +382,7 @@ def generate():
     set_hardcoded_ranges(cps)
 
     def categories(cats):
-        """ Return a carray string of codepoints contained in any of the given
-        categories. """
+        """Return a carray string of codepoints in any of the given categories."""
         catset = set(cats)
         matches = [cp for cp in cps if cp.category in catset]
         return codepoints_to_carray_str(matches)
