@@ -79,7 +79,7 @@ enum {{
   {p}private_use = -4,  // The character is for private use.
   {p}unassigned = -5,   // The character is unassigned.
   {p}widened_in_9 = -6, // Width is 1 in Unicode 8, 2 in Unicode 9+.
-  {p}non_character = -7 // The character is a noncharacter (e.g. a surrogate).
+  {p}non_character = -7 // The character is a noncharacter.
 }};
 
 /* An inclusive range of characters. */

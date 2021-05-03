@@ -1,11 +1,11 @@
 /**
- * widechar_width.h, generated on 2021-04-17.
+ * widechar_width.h, generated on 2021-05-03.
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
  *  UnicodeData.txt:     95d6515be1580b23ff9a683b5cb5c154b2ae7381
  *  EastAsianWidth.txt:  5464582b07faa40b45e1450e9f580e9af2c5a9d3
- *  emoji-data.txt:      11fd60a01e17df80035c459728350073cd9ed37b
+ *  emoji-data.txt:      b220903e472dbc2b57cd4d74904a540b0e0619ee
  */
 
 #ifndef WIDECHAR_WIDTH_H
@@ -26,7 +26,7 @@ enum {
   widechar_private_use = -4,  // The character is for private use.
   widechar_unassigned = -5,   // The character is unassigned.
   widechar_widened_in_9 = -6, // Width is 1 in Unicode 8, 2 in Unicode 9+.
-  widechar_non_character = -7 // The character is a noncharacter (e.g. a surrogate).
+  widechar_non_character = -7 // The character is a noncharacter.
 };
 
 /* An inclusive range of characters. */
