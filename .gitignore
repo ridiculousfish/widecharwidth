@@ -6,3 +6,4 @@ luas/
 tester
 wcwidth9.h
 .DS_Store
+.vscode
