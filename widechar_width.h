@@ -1,5 +1,5 @@
 /**
- * widechar_width.h, generated on 2021-05-03.
+ * widechar_width.h, generated on 2021-09-09.
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:

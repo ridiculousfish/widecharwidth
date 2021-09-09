@@ -326,15 +326,9 @@ def parse_emoji_line(line):
     fields, comment = fields_comment
     cps, _prop = fields.split(";")
     version = 0.0
+    # Some code points are marked "reserved" and do not have a version "NA".
     fmtre = re.search(r"^\s*\d+\.\d+", comment)
-    # In later versions of emoji-data.txt there are some "reserved"
-    # entries that have "NA" instead of a Unicode version number
-    # of first use, they will now return a zero version instead of
-    # crashing the script
-    if fmtre is None:
-        return [(cp, version) for cp in hexrange_to_range(cps)]
-
-    version = float(re.search(r"^\s*\d+\.\d+", comment).group(0))
+    version = float(fmtre.group(0)) if fmtre else 0.0
     return [(cp, version) for cp in hexrange_to_range(cps)]
 
 
