@@ -1,7 +1,7 @@
 test: tester
 	./tester
 
-widechar_width.h: generate.py
+widechar_width.h widechar_width.js: generate.py
 	./generate.py
 
 wcwidth9.h:
@@ -12,4 +12,4 @@ tester: test.cpp widechar_width.h | wcwidth9.h
 	clang++ -std=c++11 test.cpp -o tester
 
 clean:
-	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth.txt widechar_width.h tester
+	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth.txt widechar_width.h widechar_width.js tester

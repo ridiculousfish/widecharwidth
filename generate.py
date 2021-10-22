@@ -19,9 +19,10 @@ try:
 except NameError:
     xrange = range
 
-UNICODE_DATA_URL = "http://ftp.unicode.org/Public/UNIDATA/UnicodeData.txt"
-EAW_URL = "http://ftp.unicode.org/Public/UNIDATA/EastAsianWidth.txt"
-EMOJI_DATA_URL = "https://unicode.org/Public/emoji/12.0/emoji-data.txt"
+VERSION = "14.0.0"
+UNICODE_DATA_URL = 'https://unicode.org/Public/%s/ucd/UnicodeData.txt' % VERSION
+EAW_URL = 'https://unicode.org/Public/%s/ucd/EastAsianWidth.txt' % VERSION
+EMOJI_DATA_URL = 'https://unicode.org/Public/%s/ucd/emoji/emoji-data.txt' % VERSION
 
 # A handful of field names
 # See https://www.unicode.org/L2/L1999/UnicodeData.html
@@ -49,6 +50,9 @@ MAX_CODEPOINT = 0x110000
 CPP_PREFIX = "widechar_"
 
 OUTPUT_FILENAME = "widechar_width.h"
+OUTPUT_FILENAME_JS = "widechar_width.js"
+
+RANGE_CHARS = ("{", "}")
 
 OUTPUT_TEMPLATE = r"""
 /**
@@ -167,6 +171,117 @@ int {p}wcwidth(uint32_t c) {{
 #endif // WIDECHAR_WIDTH_H
 """
 
+OUTPUT_TEMPLATE_JS = r"""
+/*
+ * {filename}, generated on {today}.
+ * See https://github.com/ridiculousfish/widecharwidth/
+ *
+ * SHA1 file hashes:
+ *  UnicodeData.txt:     {unicode_hash}
+ *  EastAsianWidth.txt:  {eaw_hash}
+ *  emoji-data.txt:      {emoji_hash}
+ */
+
+/* Special width values */
+const {p}nonprint = -1;     // The character is not printable.
+const {p}combining = -2;    // The character is a zero-width combiner.
+const {p}ambiguous = -3;    // The character is East-Asian ambiguous width.
+const {p}private_use = -4;  // The character is for private use.
+const {p}unassigned = -5;   // The character is unassigned.
+const {p}widened_in_9 = -6; // Width is 1 in Unicode 8, 2 in Unicode 9+.
+const {p}non_character = -7; // The character is a noncharacter.
+
+/* Simple ASCII characters - used a lot, so we check them first. */
+const {p}ascii_table = [
+    {ascii}
+];
+
+/* Private usage range. */
+const {p}private_table = [
+    {private}
+];
+
+/* Nonprinting characters. */
+const {p}nonprint_table = [
+    {nonprint}
+];
+
+/* Width 0 combining marks. */
+const {p}combining_table = [
+    {combining}
+];
+
+/* Width.2 characters. */
+const {p}doublewide_table = [
+    {doublewide}
+];
+
+/* Ambiguous-width characters. */
+const {p}ambiguous_table = [
+    {ambiguous}
+];
+
+/* Unassigned characters. */
+const {p}unassigned_table = [
+    {unassigned}
+];
+
+/* Non-characters. */
+const {p}nonchar_table[] = [
+    {noncharacters}
+];
+
+/* Characters that were widened from with 1 to 2 in Unicode 9. */
+const {p}widened_table[] = [
+    {widenedin9}
+];
+
+function {p}in_table(data, ucs) {{
+    let min = 0;
+    let max = data.length - 1;
+    let mid;
+    if (ucs < data[0][0] || ucs > data[max][1])
+        return false;
+
+    while (max >= min) {{
+        mid = (min + max) >> 1;
+        if (ucs > data[mid][1]) {{
+            min = mid + 1;
+        }}
+        else if (ucs < data[mid][0]) {{
+            max = mid - 1;
+        }}
+        else {{
+            return true;
+        }}
+    }}
+    return false;
+}}
+
+/* Return the width of character c, or a special negative value. */
+function {p}wcwidth(c) {{
+    if ({p}in_table({p}ascii_table, c))
+        return 1;
+    if ({p}in_table({p}private_table, c))
+        return {p}private_use;
+    if ({p}in_table({p}nonprint_table, c))
+        return {p}nonprint;
+    if ({p}in_table({p}nonchar_table, c))
+        return {p}non_character;
+    if ({p}in_table({p}combining_table, c))
+        return {p}combining;
+    if ({p}in_table({p}doublewide_table, c))
+        return 2;
+    if ({p}in_table({p}ambiguous_table, c))
+        return {p}ambiguous;
+    if ({p}in_table({p}unassigned_table, c))
+        return {p}unassigned;
+    if ({p}in_table({p}widened_table, c))
+        return {p}widened_in_9;
+    return 1;
+}}
+"""
+
 # Ambiguous East Asian characters
 WIDTH_AMBIGUOUS_EASTASIAN = -3
 
@@ -239,7 +354,7 @@ def merged_codepoints(cps):
 
 def gen_seps(length):
     """ Yield separators for a table of given length """
-    table_columns = 3
+    table_columns = 1
     for idx in xrange(1, length + 1):
         if idx == length:
             yield ""
@@ -250,12 +365,13 @@ def gen_seps(length):
 
 
 def codepoints_to_carray_str(cps):
+    global RANGE_CHARS
     """ Given a list of codepoints, return a C array string representing their inclusive ranges. """
     result = ""
     ranges = merged_codepoints(cps)
     seps = gen_seps(len(ranges))
     for (start, end) in ranges:
-        result += "{%s, %s}%s" % (start.hex(), end.hex(), next(seps))
+        result += "%s%s, %s%s%s" % (RANGE_CHARS[0], start.hex(), end.hex(), RANGE_CHARS[1], next(seps))
     return result
 
 
@@ -327,8 +443,8 @@ def parse_emoji_line(line):
     cps, _prop = fields.split(";")
     version = 0.0
     # Some code points are marked "reserved" and do not have a version "NA".
-    fmtre = re.search(r"^\s*\d+\.\d+", comment)
-    version = float(fmtre.group(0)) if fmtre else 0.0
+    fmtre = re.search(r"^\s*E\d+\.\d+", comment)
+    version = float(fmtre.group(0).strip()[1:]) if fmtre else 0.0
     return [(cp, version) for cp in hexrange_to_range(cps)]
 
 
@@ -435,11 +551,19 @@ def generate():
         "ambiguous": codepoints_with_width(WIDTH_AMBIGUOUS_EASTASIAN),
         "widenedin9": codepoints_with_width(WIDTH_WIDENED_IN_9),
     }
-    return OUTPUT_TEMPLATE.strip().format(**fields)
+    return fields
 
 
-if __name__ == "__main__":
-    with open(OUTPUT_FILENAME, "w") as fd:
-        fd.write(generate())
-        fd.write("\n")
+if __name__ == '__main__':
+    fields = generate()
+    with open(OUTPUT_FILENAME, 'w') as fd:
+        fd.write(OUTPUT_TEMPLATE.strip().format(**fields))
+        fd.write('\n')
     log("Output " + OUTPUT_FILENAME)
+
+    RANGE_CHARS = ('[', ']')
+    fields = generate()
+    with open(OUTPUT_FILENAME_JS, 'w') as fd:
+        fd.write(OUTPUT_TEMPLATE_JS.strip().format(**fields))
+        fd.write('\n')
+    log("Output " + OUTPUT_FILENAME_JS)
