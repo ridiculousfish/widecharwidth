@@ -20,9 +20,9 @@ except NameError:
     xrange = range
 
 VERSION = "14.0.0"
-UNICODE_DATA_URL = 'https://unicode.org/Public/%s/ucd/UnicodeData.txt' % VERSION
-EAW_URL = 'https://unicode.org/Public/%s/ucd/EastAsianWidth.txt' % VERSION
-EMOJI_DATA_URL = 'https://unicode.org/Public/%s/ucd/emoji/emoji-data.txt' % VERSION
+UNICODE_DATA_URL = "https://unicode.org/Public/%s/ucd/UnicodeData.txt" % VERSION
+EAW_URL = "https://unicode.org/Public/%s/ucd/EastAsianWidth.txt" % VERSION
+EMOJI_DATA_URL = "https://unicode.org/Public/%s/ucd/emoji/emoji-data.txt" % VERSION
 
 # A handful of field names
 # See https://www.unicode.org/L2/L1999/UnicodeData.html
@@ -293,7 +293,7 @@ WIDTH_PRIVATE_USE = -7
 
 
 class CodePoint(object):  # pylint: disable=too-few-public-methods
-    """ Represents a single Unicode codepoint """
+    """Represents a single Unicode codepoint"""
 
     def __init__(self, codepoint):
         self.codepoint = codepoint
@@ -301,12 +301,12 @@ class CodePoint(object):  # pylint: disable=too-few-public-methods
         self.category = CAT_UNASSIGNED
 
     def hex(self):
-        """ Return the codepoint as a hex string """
+        """Return the codepoint as a hex string"""
         return "0x%05X" % self.codepoint
 
 
 def log(msg):
-    """ Logs a string to stderr """
+    """Logs a string to stderr"""
     sys.stderr.write(str(msg) + "\n")
 
 
@@ -338,7 +338,7 @@ def set_general_categories(unicode_data, cps):
 
 
 def merged_codepoints(cps):
-    """ return a list of codepoints (start, end) for inclusive ranges """
+    """return a list of codepoints (start, end) for inclusive ranges"""
     if not cps:
         return []
     cps = sorted(cps, key=lambda cp: cp.codepoint)
@@ -353,7 +353,7 @@ def merged_codepoints(cps):
 
 
 def gen_seps(length):
-    """ Yield separators for a table of given length """
+    """Yield separators for a table of given length"""
     table_columns = 1
     for idx in xrange(1, length + 1):
         if idx == length:
@@ -371,7 +371,13 @@ def codepoints_to_carray_str(cps):
     ranges = merged_codepoints(cps)
     seps = gen_seps(len(ranges))
     for (start, end) in ranges:
-        result += "%s%s, %s%s%s" % (RANGE_CHARS[0], start.hex(), end.hex(), RANGE_CHARS[1], next(seps))
+        result += "%s%s, %s%s%s" % (
+            RANGE_CHARS[0],
+            start.hex(),
+            end.hex(),
+            RANGE_CHARS[1],
+            next(seps),
+        )
     return result
 
 
@@ -387,7 +393,7 @@ def hexrange_to_range(hexrange):
 
 
 def parse_eaw_line(eaw_line):
-    """ Return a list of tuples (codepoint, width) from an EAW line """
+    """Return a list of tuples (codepoint, width) from an EAW line"""
     # Remove hash.
     line = eaw_line.split("#", 1)[0]
     fields = line.strip().split(";")
@@ -407,7 +413,7 @@ def parse_eaw_line(eaw_line):
 
 
 def set_eaw_widths(eaw_data_lines, cps):
-    """ Read from EastAsianWidth.txt, set width values on the codepoints """
+    """Read from EastAsianWidth.txt, set width values on the codepoints"""
     for line in eaw_data_lines:
         for (cp, width) in parse_eaw_line(line):
             cps[cp].width = width
@@ -434,7 +440,7 @@ def set_eaw_widths(eaw_data_lines, cps):
 
 
 def parse_emoji_line(line):
-    """ Return a list {cp, version} for the line """
+    """Return a list {cp, version} for the line"""
     # Example line: 0023   ; Emoji #  1.1  [1] (#)  number sign
     fields_comment = line.split("#", 1)
     if len(fields_comment) != 2:
@@ -449,7 +455,7 @@ def parse_emoji_line(line):
 
 
 def set_emoji_widths(emoji_data_lines, cps):
-    """ Read from emoji-data.txt, set codepoint widths """
+    """Read from emoji-data.txt, set codepoint widths"""
     for line in emoji_data_lines:
         for (cp, version) in parse_emoji_line(line):
             # Don't consider <=1F000 values as emoji. These can only be made
@@ -474,7 +480,7 @@ def set_emoji_widths(emoji_data_lines, cps):
 
 
 def set_hardcoded_ranges(cps):
-    """ Mark private use and surrogate codepoints """
+    """Mark private use and surrogate codepoints"""
     # Private use can be determined awkwardly from UnicodeData.txt,
     # but we just hard-code them.
     # We do not treat "private use high surrogate" as private use
@@ -502,7 +508,7 @@ def set_hardcoded_ranges(cps):
 
 
 def generate():
-    """ Return our widechar_width.h as a string """
+    """Return our widechar_width.h as a string"""
     # Read our three files.
     unicode_data, unicode_hash = read_datafile(UNICODE_DATA_URL)
     eaw_data, eaw_hash = read_datafile(EAW_URL)
@@ -525,11 +531,11 @@ def generate():
         return codepoints_to_carray_str(matches)
 
     def codepoints_with_width(width):
-        """ Return a carray string of codepoints with the given width. """
+        """Return a carray string of codepoints with the given width."""
         return codepoints_to_carray_str([cp for cp in cps if cp.width == width])
 
     def ascii_codepoints():
-        """ Return a carray string of codepoints with the given width. """
+        """Return a carray string of codepoints with the given width."""
         return codepoints_to_carray_str(
             [cp for cp in cps if cp.codepoint < 0x7F and cp.codepoint >= 0x20]
         )
@@ -554,16 +560,16 @@ def generate():
     return fields
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fields = generate()
-    with open(OUTPUT_FILENAME, 'w') as fd:
+    with open(OUTPUT_FILENAME, "w") as fd:
         fd.write(OUTPUT_TEMPLATE.strip().format(**fields))
-        fd.write('\n')
+        fd.write("\n")
     log("Output " + OUTPUT_FILENAME)
 
-    RANGE_CHARS = ('[', ']')
+    RANGE_CHARS = ("[", "]")
     fields = generate()
-    with open(OUTPUT_FILENAME_JS, 'w') as fd:
+    with open(OUTPUT_FILENAME_JS, "w") as fd:
         fd.write(OUTPUT_TEMPLATE_JS.strip().format(**fields))
-        fd.write('\n')
+        fd.write("\n")
     log("Output " + OUTPUT_FILENAME_JS)
