@@ -8,6 +8,8 @@ import os.path
 import re
 import sys
 
+from collections.abc import Iterable
+from typing import NamedTuple
 from urllib.request import urlretrieve
 
 VERSION = "14.0.0"
@@ -42,8 +44,6 @@ CPP_PREFIX = "widechar_"
 
 OUTPUT_FILENAME = "widechar_width.h"
 OUTPUT_FILENAME_JS = "widechar_width.js"
-
-RANGE_CHARS = ("{", "}")
 
 OUTPUT_TEMPLATE = r"""
 /**
@@ -296,6 +296,23 @@ class CodePoint(object):  # pylint: disable=too-few-public-methods
         return "0x%05X" % self.codepoint
 
 
+# Settings controlling language output.
+class LangSettings(NamedTuple):
+    range_chars: str  # open/close characters for ranges, like "{}"
+
+
+# Data parsed from unicode.org datafiles.
+# Datas are lists of lines, with comment-only lines removed.
+# Hashes are sha1 strings.
+class UnicodeDatas(NamedTuple):
+    unicode_data: list[str]
+    unicode_hash: str
+    eaw_data: list[str]
+    eaw_hash: str
+    emoji_data: list[str]
+    emoji_hash: str
+
+
 def log(msg):
     """Logs a string to stderr"""
     sys.stderr.write(str(msg) + "\n")
@@ -355,18 +372,17 @@ def gen_seps(length):
             yield ", "
 
 
-def codepoints_to_carray_str(cps):
-    global RANGE_CHARS
-    """ Given a list of codepoints, return a C array string representing their inclusive ranges. """
+def codepoints_to_carray_str(settings: LangSettings, cps: Iterable[CodePoint]):
+    """Given a list of codepoints, return a C array string representing their inclusive ranges."""
     result = ""
     ranges = merged_codepoints(cps)
     seps = gen_seps(len(ranges))
     for (start, end) in ranges:
         result += "%s%s, %s%s%s" % (
-            RANGE_CHARS[0],
+            settings.range_chars[0],
             start.hex(),
             end.hex(),
-            RANGE_CHARS[1],
+            settings.range_chars[1],
             next(seps),
         )
     return result
@@ -498,46 +514,55 @@ def set_hardcoded_ranges(cps):
             cps[idx].category = CAT_NON_CHARACTERS
 
 
-def generate():
-    """Return our widechar_width.h as a string"""
-    # Read our three files.
+def read_datas():
+    """Read our three Unicode files, and return a UnicodeDatas."""
     unicode_data, unicode_hash = read_datafile(UNICODE_DATA_URL)
     eaw_data, eaw_hash = read_datafile(EAW_URL)
     emoji_data, emoji_hash = read_datafile(EMOJI_DATA_URL)
+    return UnicodeDatas(
+        unicode_data, unicode_hash, eaw_data, eaw_hash, emoji_data, emoji_hash
+    )
 
-    log("Thinking...")
 
-    # Generate a CodePoint for each value.
+def make_codepoints(datas: UnicodeDatas):
+    """Given a UnicodeDatas, return a list of CodePoints."""
     cps = [CodePoint(i) for i in range(MAX_CODEPOINT + 1)]
-
-    set_general_categories(unicode_data, cps)
-    set_eaw_widths(eaw_data, cps)
-    set_emoji_widths(emoji_data, cps)
+    set_general_categories(datas.unicode_data, cps)
+    set_eaw_widths(datas.eaw_data, cps)
+    set_emoji_widths(datas.emoji_data, cps)
     set_hardcoded_ranges(cps)
+    return cps
+
+
+def make_fields(datas: UnicodeDatas, cps: list[CodePoint], settings: LangSettings):
+    """Return a dictionary of fields, ready to be plugged into a template string."""
+    log("Thinking...")
 
     def categories(cats):
         """Return a carray string of codepoints in any of the given categories."""
         catset = set(cats)
         matches = [cp for cp in cps if cp.category in catset]
-        return codepoints_to_carray_str(matches)
+        return codepoints_to_carray_str(settings, matches)
 
     def codepoints_with_width(width):
         """Return a carray string of codepoints with the given width."""
-        return codepoints_to_carray_str([cp for cp in cps if cp.width == width])
+        return codepoints_to_carray_str(
+            settings, (cp for cp in cps if cp.width == width)
+        )
 
     def ascii_codepoints():
         """Return a carray string of ASCII codepoints."""
         return codepoints_to_carray_str(
-            [cp for cp in cps if 0x20 <= cp.codepoint < 0x7F]
+            settings, (cp for cp in cps if 0x20 <= cp.codepoint < 0x7F)
         )
 
     fields = {
         "p": CPP_PREFIX,
         "filename": OUTPUT_FILENAME,
         "today": str(datetime.date.today()),
-        "unicode_hash": unicode_hash,
-        "eaw_hash": eaw_hash,
-        "emoji_hash": emoji_hash,
+        "unicode_hash": datas.unicode_hash,
+        "eaw_hash": datas.eaw_hash,
+        "emoji_hash": datas.emoji_hash,
         "ascii": ascii_codepoints(),
         "private": categories([CAT_PRIVATE_USE]),
         "noncharacters": categories([CAT_NON_CHARACTERS]),
@@ -552,14 +577,15 @@ def generate():
 
 
 if __name__ == "__main__":
-    fields = generate()
+    datas = read_datas()
+    cps = make_codepoints(datas)
+    fields = make_fields(datas, cps, LangSettings("{}"))
     with open(OUTPUT_FILENAME, "w") as fd:
         fd.write(OUTPUT_TEMPLATE.strip().format(**fields))
         fd.write("\n")
     log("Output " + OUTPUT_FILENAME)
 
-    RANGE_CHARS = ("[", "]")
-    fields = generate()
+    fields = make_fields(datas, cps, LangSettings("[]"))
     with open(OUTPUT_FILENAME_JS, "w") as fd:
         fd.write(OUTPUT_TEMPLATE_JS.strip().format(**fields))
         fd.write("\n")
