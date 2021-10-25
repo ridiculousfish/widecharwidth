@@ -132,7 +132,7 @@ static const struct {p}range {p}nonchar_table[] = {{
     {noncharacters}
 }};
 
-/* Characters that were widened from with 1 to 2 in Unicode 9. */
+/* Characters that were widened from width 1 to 2 in Unicode 9. */
 static const struct {p}range {p}widened_table[] = {{
     {widenedin9}
 }};
@@ -231,7 +231,7 @@ const {p}nonchar_table[] = [
     {noncharacters}
 ];
 
-/* Characters that were widened from with 1 to 2 in Unicode 9. */
+/* Characters that were widened from width 1 to 2 in Unicode 9. */
 const {p}widened_table[] = [
     {widenedin9}
 ];

@@ -1430,7 +1430,7 @@ static const struct widechar_range widechar_nonchar_table[] = {
     {0x10FFFE, 0x10FFFF}
 };
 
-/* Characters that were widened from with 1 to 2 in Unicode 9. */
+/* Characters that were widened from width 1 to 2 in Unicode 9. */
 static const struct widechar_range widechar_widened_table[] = {
     {0x1F57A, 0x1F57A},
     {0x1F5A4, 0x1F5A4},
