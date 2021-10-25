@@ -535,9 +535,9 @@ def generate():
         return codepoints_to_carray_str([cp for cp in cps if cp.width == width])
 
     def ascii_codepoints():
-        """Return a carray string of codepoints with the given width."""
+        """Return a carray string of ASCII codepoints."""
         return codepoints_to_carray_str(
-            [cp for cp in cps if cp.codepoint < 0x7F and cp.codepoint >= 0x20]
+            [cp for cp in cps if 0x20 <= cp.codepoint < 0x7F]
         )
 
     fields = {
