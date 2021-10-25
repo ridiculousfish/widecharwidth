@@ -1404,8 +1404,7 @@ static const struct widechar_range widechar_unassigned_table[] = {
     {0xE0000, 0xE0000},
     {0xE0002, 0xE001F},
     {0xE0080, 0xE00FF},
-    {0xE01F0, 0xEFFFD},
-    {0x110000, 0x110000}
+    {0xE01F0, 0xEFFFD}
 };
 
 /* Non-characters. */

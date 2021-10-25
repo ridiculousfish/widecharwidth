@@ -45,7 +45,7 @@ CAT_SURROGATE = "Cs"
 CAT_NON_CHARACTERS = "non-characters"
 
 # Maximum codepoint value.
-MAX_CODEPOINT = 0x110000
+MAX_CODEPOINT = 0x10FFFF
 
 CPP_PREFIX = "widechar_"
 

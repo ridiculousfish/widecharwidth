@@ -313,7 +313,7 @@ static bool exceptional(int c) {
 
 int run_tests(void) {
     int ret = 0;
-    int max_cp = 0x110000;
+    int max_cp = 0x10FFFF;
     for (int c = 0; c <= max_cp; c++) {
         auto w1 = wcwidth9(c);
         auto w2 = widechar_wcwidth(c);
