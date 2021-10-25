@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """ Outputs the width file to stdout. """
 
@@ -8,16 +8,7 @@ import os.path
 import re
 import sys
 
-try:
-    # python3
-    from urllib.request import urlretrieve
-except ImportError:
-    from urllib import urlretrieve
-try:
-    # python3
-    xrange
-except NameError:
-    xrange = range
+from urllib.request import urlretrieve
 
 VERSION = "14.0.0"
 UNICODE_DATA_URL = "https://unicode.org/Public/%s/ucd/UnicodeData.txt" % VERSION
@@ -355,7 +346,7 @@ def merged_codepoints(cps):
 def gen_seps(length):
     """Yield separators for a table of given length"""
     table_columns = 1
-    for idx in xrange(1, length + 1):
+    for idx in range(1, length + 1):
         if idx == length:
             yield ""
         elif idx % table_columns == 0:
@@ -434,7 +425,7 @@ def set_eaw_widths(eaw_data_lines, cps):
         (0x30000, 0x3FFFD),
     ]
     for wr in wide_ranges:
-        for cp in xrange(wr[0], wr[1] + 1):
+        for cp in range(wr[0], wr[1] + 1):
             if cps[cp].width is None:
                 cps[cp].width = 2
 
@@ -487,23 +478,23 @@ def set_hardcoded_ranges(cps):
     # so as to match wcwidth9().
     private_ranges = [(0xE000, 0xF8FF), (0xF0000, 0xFFFFD), (0x100000, 0x10FFFD)]
     for (first, last) in private_ranges:
-        for idx in xrange(first, last + 1):
+        for idx in range(first, last + 1):
             cps[idx].category = CAT_PRIVATE_USE
 
     surrogate_ranges = [(0xD800, 0xDBFF), (0xDC00, 0xDFFF)]
     for (first, last) in surrogate_ranges:
-        for idx in xrange(first, last + 1):
+        for idx in range(first, last + 1):
             cps[idx].category = CAT_SURROGATE
 
     # See "noncharacters" discussion at https://www.unicode.org/faq/private_use.html
     # "Last two code points of each of the 16 supplementary planes" and also BMP (plane 0).
     nonchar_ranges = [(0xFDD0, 0xFDEF)]
-    for plane in xrange(0, 16 + 1):
+    for plane in range(0, 16 + 1):
         c = 0x10000 * plane + 0xFFFE
         nonchar_ranges.append((c, c + 1))
 
     for (first, last) in nonchar_ranges:
-        for idx in xrange(first, last + 1):
+        for idx in range(first, last + 1):
             cps[idx].category = CAT_NON_CHARACTERS
 
 
@@ -517,7 +508,7 @@ def generate():
     log("Thinking...")
 
     # Generate a CodePoint for each value.
-    cps = [CodePoint(i) for i in xrange(MAX_CODEPOINT + 1)]
+    cps = [CodePoint(i) for i in range(MAX_CODEPOINT + 1)]
 
     set_general_categories(unicode_data, cps)
     set_eaw_widths(eaw_data, cps)
