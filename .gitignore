@@ -7,3 +7,6 @@ tester
 wcwidth9.h
 .DS_Store
 .vscode
+libwidechar_width.rlib
+widechar_width
+.*.swp
