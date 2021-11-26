@@ -1,6 +1,6 @@
-widecharwidth is a Python script that outputs a C++11 header-only implementation of `wcwidth()`, by downloading and parsing the latest `UnicodeData.txt`, `EastAsianWidth.txt`, and `emoji-data.txt`.
+widecharwidth is a Python script that outputs implementations of `wcwidth()`, by downloading and parsing the latest `UnicodeData.txt`, `EastAsianWidth.txt`, and `emoji-data.txt`. Currently it generates C++, JavaScript, and Rust code.
 
-## Usage
+## C++ Usage
 
 You may directly copy and use the included `widechar_width.h`.
 
@@ -18,10 +18,27 @@ If you aren't sure how to handle negative return values, try this table:
  | `widechar_non_character`| 0 |
  | `widechar_widened_in_9` | 2 (or maybe 1, renderer dependent) |
 
-## Regenerating the header
+## JavaScript usage
 
-To regenerate the header, run `make`. This will download and parse the relevant files, and run tests.
+The JS file `widechar_width.js` contains the function `widechar_wcwidth()`. This behaves the same as the C++ version.
+
+## Rust usage
+
+In Rust, use `widechar_width.rs` and match `WcWidth::from_char()`. Example:
+
+```rust
+match WcWidth::from_char(c) {
+    WcWidth::One | WcWidth::Two => (), // width 1 or 2
+    WcWidth::Combining => (),          // zero-width combiner
+    WcWidth::NonPrint => (),           // non-printing
+    ...
+}
+```
+
+## Regenerating the sources
+
+To regenerate the generated sources, run `make`. This will download and parse the relevant files, and run tests.
 
 ## License
 
-widecharwidth and its output headers are released into the public domain. They may be used for any purpose without requiring attribution, or under the CC0 license if public domain is not available. See included LICENSE.
+widecharwidth and its output files are released into the public domain. They may be used for any purpose without requiring attribution, or under the CC0 license if public domain is not available. See included LICENSE.
