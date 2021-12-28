@@ -712,11 +712,10 @@ def make_fields(
             settings, (cp for cp in cps if cp.width == width)
         )
 
-    def ascii_codepoints():
-        """Return a carray string of ASCII codepoints."""
-        return codepoints_to_carray_str(
-            settings, (cp for cp in cps if 0x20 <= cp.codepoint < 0x7F)
-        )
+    # A carray string of ASCII codepoints."
+    ascii_codepoints = codepoints_to_carray_str(
+        settings, (cp for cp in cps if 0x20 <= cp.codepoint < 0x7F)
+    )
 
     fields = {
         "p": CPP_PREFIX,
@@ -725,7 +724,7 @@ def make_fields(
         "unicode_hash": datas.unicode_hash,
         "eaw_hash": datas.eaw_hash,
         "emoji_hash": datas.emoji_hash,
-        "ascii": ascii_codepoints(),
+        "ascii": ascii_codepoints,
         "private": categories([CAT_PRIVATE_USE]),
         "noncharacters": categories([CAT_NON_CHARACTERS]),
         "nonprint": categories(["Cc", "Cf", "Zl", "Zp", CAT_SURROGATE]),
