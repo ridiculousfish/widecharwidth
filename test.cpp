@@ -30,6 +30,9 @@ static bool exceptional(int c) {
         wcwidth9_intable(wcwidth9_not_assigned, WCWIDTH9_ARRAY_SIZE(wcwidth9_not_assigned), c)) {
         return true;
     }
+    if ((c >= 0x1160 && c <= 0x11FF) || (c >= 0xD7B0 && c <= 0xD7FF)) {
+        return true;
+    }
     switch (c) {
             // Format (Cf) characters which wcwidth9 reports as width 1 but should be
             // -1

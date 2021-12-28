@@ -104,6 +104,11 @@ static const struct {p}range {p}combining_table[] = {{
     {combining}
 }};
 
+/* Width 0 combining letters. */
+static const struct {p}range {p}combiningletters_table[] = {{
+    {combiningletters}
+}};
+
 /* Width 2 characters. */
 static const struct {p}range {p}doublewide_table[] = {{
     {doublewide}
@@ -147,6 +152,8 @@ int {p}wcwidth(uint32_t c) {{
     if ({p}in_table({p}nonchar_table, c))
         return {p}non_character;
     if ({p}in_table({p}combining_table, c))
+        return {p}combining;
+    if ({p}in_table({p}combiningletters_table, c))
         return {p}combining;
     if ({p}in_table({p}doublewide_table, c))
         return 2;
@@ -218,6 +225,11 @@ const COMBINING_TABLE: &'static [R] = &[
     {combining}
 ];
 
+/// Width 0 combining letters.
+const COMBININGLETTERS_TABLE: &'static [R] = &[
+    {combiningletters}
+];
+
 /// Width 2 characters.
 const DOUBLEWIDE_TABLE: &'static [R] = &[
     {doublewide}
@@ -268,6 +280,9 @@ impl WcWidth {{
             return Self::NonCharacter;
         }}
         if in_table(&COMBINING_TABLE, c) {{
+            return Self::Combining;
+        }}
+        if in_table(&COMBININGLETTERS_TABLE, c) {{
             return Self::Combining;
         }}
         if in_table(&DOUBLEWIDE_TABLE, c) {{
@@ -362,6 +377,11 @@ const {p}combining_table = [
     {combining}
 ];
 
+/* Width 0 combining letters. */
+const {p}combiningletters_table = [
+    {combiningletters}
+];
+
 /* Width.2 characters. */
 const {p}doublewide_table = [
     {doublewide}
@@ -420,6 +440,8 @@ function {p}wcwidth(c) {{
     if ({p}in_table({p}nonchar_table, c))
         return {p}non_character;
     if ({p}in_table({p}combining_table, c))
+        return {p}combining;
+    if ({p}in_table({p}combiningletters_table, c))
         return {p}combining;
     if ({p}in_table({p}doublewide_table, c))
         return 2;
@@ -717,6 +739,25 @@ def make_fields(
         settings, (cp for cp in cps if 0x20 <= cp.codepoint < 0x7F)
     )
 
+    # A decomposed Hangul syllable is a grapheme that consists of up to three
+    # code points. The first code point has width 2. The rest consists of
+    # Jamo vowels and/or a trailing consonant, both of which have width 1.
+    # This means that clients who naïvely sum individual characters'
+    # wcwidth(), will compute string widths different from the intended width
+    # (2).  Work around this by forcing width 0 for these characters. This
+    # matches glibc and others.
+    combiningletters = codepoints_to_carray_str(
+        settings,
+        (
+            cp
+            for cp in cps
+            if (
+                (cp.codepoint >= 0x1160 and cp.codepoint <= 0x11FF)
+                or (cp.codepoint >= 0xD7B0 and cp.codepoint <= 0xD7FF)
+            )
+        ),
+    )
+
     fields = {
         "p": CPP_PREFIX,
         "filename": filename,
@@ -729,6 +770,7 @@ def make_fields(
         "noncharacters": categories([CAT_NON_CHARACTERS]),
         "nonprint": categories(["Cc", "Cf", "Zl", "Zp", CAT_SURROGATE]),
         "combining": categories(["Mn", "Mc", "Me"]),
+        "combiningletters": combiningletters,
         "doublewide": codepoints_with_width(2),
         "unassigned": categories([CAT_UNASSIGNED]),
         "ambiguous": codepoints_with_width(WIDTH_AMBIGUOUS_EASTASIAN),
@@ -757,4 +799,3 @@ if __name__ == "__main__":
         fd.write(OUTPUT_TEMPLATE_RUST.strip().format(**fields))
         fd.write("\n")
     log("Output " + OUTPUT_FILENAME_RUST)
-

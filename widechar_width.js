@@ -1,5 +1,5 @@
 /*
- * widechar_width.js, generated on 2021-11-24.
+ * widechar_width.js, generated on 2022-01-01.
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
@@ -358,6 +358,12 @@ const widechar_combining_table = [
     [0x1E8D0, 0x1E8D6],
     [0x1E944, 0x1E94A],
     [0xE0100, 0xE01EF]
+];
+
+/* Width 0 combining letters. */
+const widechar_combiningletters_table = [
+    [0x01160, 0x011FF],
+    [0x0D7B0, 0x0D7FF]
 ];
 
 /* Width.2 characters. */
@@ -1459,6 +1465,8 @@ function widechar_wcwidth(c) {
     if (widechar_in_table(widechar_nonchar_table, c))
         return widechar_non_character;
     if (widechar_in_table(widechar_combining_table, c))
+        return widechar_combining;
+    if (widechar_in_table(widechar_combiningletters_table, c))
         return widechar_combining;
     if (widechar_in_table(widechar_doublewide_table, c))
         return 2;
