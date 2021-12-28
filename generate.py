@@ -694,7 +694,9 @@ def make_codepoints(datas: UnicodeDatas):
     return cps
 
 
-def make_fields(datas: UnicodeDatas, cps: list[CodePoint], settings: LangSettings, filename):
+def make_fields(
+    datas: UnicodeDatas, cps: list[CodePoint], settings: LangSettings, filename
+):
     """Return a dictionary of fields, ready to be plugged into a template string."""
     log("Thinking...")
 
