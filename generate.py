@@ -505,11 +505,11 @@ def set_general_categories(unicode_data, cps):
                 cps[idx].category = fields[FIELD_CATEGORY]
 
 
-def merged_codepoints(cps):
+def merged_codepoints(cps: Iterable[CodePoint]):
     """return a list of codepoints (start, end) for inclusive ranges"""
+    cps = sorted(cps, key=lambda cp: cp.codepoint)
     if not cps:
         return []
-    cps = sorted(cps, key=lambda cp: cp.codepoint)
     ranges = [(cps[0], cps[0])]
     for cp in cps[1:]:
         last_range = ranges[-1]
