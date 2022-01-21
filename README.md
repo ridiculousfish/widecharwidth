@@ -64,7 +64,7 @@ For example, in C++:
     // but widechar_width says it has a width of 1 because Unicode classifies it as "neutral".
     //
     // So we simply decide the width ourselves
-    if (wc >= 0x1F6E1) return 2;
+    if (wc == 0x1F6E1) return 2;
 
     int width = widechar_wcwidth(wc);
 
