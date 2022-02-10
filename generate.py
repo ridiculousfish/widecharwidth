@@ -635,38 +635,30 @@ def parse_emoji_line(line):
     if len(fields_comment) != 2:
         return []
     fields, comment = fields_comment
-    cps, _prop = fields.split(";")
+    cps, prop = fields.split(";")
+    prop = prop.strip()
     version = 0.0
     # Some code points are marked "reserved" and do not have a version "NA".
     fmtre = re.search(r"^\s*E\d+\.\d+", comment)
     version = float(fmtre.group(0).strip()[1:]) if fmtre else 0.0
-    return [(cp, version) for cp in hexrange_to_range(cps)]
+    return [(cp, version, prop) for cp in hexrange_to_range(cps)]
 
 
 def set_emoji_widths(emoji_data_lines, cps):
     """Read from emoji-data.txt, set codepoint widths"""
     for line in emoji_data_lines:
-        for (cp, version) in parse_emoji_line(line):
-            # Don't consider <=1F000 values as emoji. These can only be made
-            # emoji through the variation selector which interacts terribly
-            # with wcwidth().
-            if cp < 0x1F000:
-                continue
-
+        for (cp, version, prop) in parse_emoji_line(line):
             # Skip codepoints that have a version of 0.0 as they were marked
             # in the emoji-data file as reserved/unused:
             if version <= 1.0:
                 continue
 
-            # Skip codepoints that are explicitly not wide.
-            # For example U+1F336 ("Hot Pepper") renders like any emoji but is
-            # marked as neutral in EAW so has width 1 for some reason.
-            if cps[cp].width == 1:
-                continue
-
-            # If this emoji was introduced before Unicode 9, then it was widened in 9.
-            cps[cp].width = 2 if version >= 9.0 else WIDTH_WIDENED_IN_9
-
+            # We only care about emoji *presentation*.
+            # Other codepoints should be rendered as text by default,
+            # so their EAW width applies.
+            if prop == "Emoji_Presentation":
+                # If this emoji was introduced before Unicode 9, then it was widened in 9.
+                cps[cp].width = 2 if version >= 9.0 else WIDTH_WIDENED_IN_9
 
 def set_hardcoded_ranges(cps):
     """Mark private use and surrogate codepoints"""

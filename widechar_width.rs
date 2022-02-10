@@ -1,5 +1,5 @@
 /**
- * widechar_width.rs, generated on 2022-01-01.
+ * widechar_width.rs, generated on 2022-02-10.
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
