@@ -648,9 +648,8 @@ def set_emoji_widths(emoji_data_lines, cps):
     """Read from emoji-data.txt, set codepoint widths"""
     for line in emoji_data_lines:
         for (cp, version, prop) in parse_emoji_line(line):
-            # Skip codepoints that have a version of 0.0 as they were marked
-            # in the emoji-data file as reserved/unused:
-            if version <= 1.0:
+            # The Regional Indicators are special
+            if cp in range(0x1f1e6, 0x1f200):
                 continue
 
             # We only care about emoji *presentation*.
