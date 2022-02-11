@@ -657,7 +657,9 @@ def set_emoji_widths(emoji_data_lines, cps):
             # so their EAW width applies.
             if prop == "Emoji_Presentation":
                 # If this emoji was introduced before Unicode 9, then it was widened in 9.
-                cps[cp].width = 2 if version >= 9.0 else WIDTH_WIDENED_IN_9
+                # The version we get here is the *Emoji* version.
+                # Before Unicode 11 this was different, Unicode 9 shipped with Emoji 3.0.
+                cps[cp].width = 2 if version >= 3.0 else WIDTH_WIDENED_IN_9
 
 def set_hardcoded_ranges(cps):
     """Mark private use and surrogate codepoints"""
