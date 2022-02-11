@@ -6,7 +6,7 @@ widechar_width.h widechar_width.js widechar_width.rs: generate.py
 
 wcwidth9.h:
 	@echo "Tests require original wcwidth9.h from https://github.com/joshuarubin/wcwidth9"
-	@false
+	wget https://raw.githubusercontent.com/joshuarubin/wcwidth9/master/wcwidth9.h
 
 rust: widechar_width.rs
 	rustc widechar_width.rs --crate-type lib --test

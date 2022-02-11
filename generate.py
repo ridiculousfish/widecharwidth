@@ -330,7 +330,7 @@ mod test {{
         assert_eq!(WcWidth::from_char('\x1f'), WcWidth::NonPrint);
         assert_eq!(WcWidth::from_char('\u{{e001}}'), WcWidth::PrivateUse);
         assert_eq!(WcWidth::from_char('\u{{2716}}'), WcWidth::One);
-        assert_eq!(WcWidth::from_char('\u{{270a}}'), WcWidth::Two);
+        assert_eq!(WcWidth::from_char('\u{{270a}}'), WcWidth::WidenedIn9);
         assert_eq!(WcWidth::from_char('\u{{3fffd}}'), WcWidth::Two);
     }}
 }}
