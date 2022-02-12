@@ -1,8 +1,10 @@
 /**
- * {filename}, generated on {today}.
+ * {filename}
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
+ *  generate.py:         {generate_hash}
+ *  template.rs:         {template_hash}
  *  UnicodeData.txt:     {unicode_hash}
  *  EastAsianWidth.txt:  {eaw_hash}
  *  emoji-data.txt:      {emoji_hash}

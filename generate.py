@@ -297,7 +297,12 @@ def make_codepoints(datas: UnicodeDatas):
 
 
 def make_fields(
-    datas: UnicodeDatas, cps: list[CodePoint], settings: LangSettings, filename
+    datas: UnicodeDatas,
+    cps: list[CodePoint],
+    settings: LangSettings,
+    template_hash: str,
+    generate_hash: str,
+    filename,
 ):
     """Return a dictionary of fields, ready to be plugged into a template string."""
     log("Thinking...")
@@ -341,7 +346,8 @@ def make_fields(
     fields = {
         "p": CPP_PREFIX,
         "filename": filename,
-        "today": str(datetime.date.today()),
+        "generate_hash": generate_hash,
+        "template_hash": template_hash,
         "unicode_hash": datas.unicode_hash,
         "eaw_hash": datas.eaw_hash,
         "emoji_hash": datas.emoji_hash,
@@ -360,6 +366,9 @@ def make_fields(
 
 
 if __name__ == "__main__":
+    with open(__file__, "rb") as oof:
+        data = oof.read()
+    generate_hash = hashlib.sha1(data).hexdigest()
     datas = read_datas()
     cps = make_codepoints(datas)
     langs = {
@@ -370,8 +379,11 @@ if __name__ == "__main__":
     for suffix, settings in langs.items():
         with open("templates/template" + suffix) as templatefile:
             template = templatefile.read()
+            template_hash = hashlib.sha1(template.encode("utf-8")).hexdigest()
             output = "widechar_width" + suffix
-            fields = make_fields(datas, cps, LangSettings(settings), output)
+            fields = make_fields(
+                datas, cps, LangSettings(settings), template_hash, generate_hash, output
+            )
             with open(output, "w") as fd:
                 fd.write(template.strip().format(**fields))
                 fd.write("\n")
