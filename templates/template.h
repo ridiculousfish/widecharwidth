@@ -1,5 +1,5 @@
 /**
- * {filename}
+ * {filename} for Unicode {unicode_version}
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:

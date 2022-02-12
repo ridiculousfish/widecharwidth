@@ -1,10 +1,10 @@
 /*
- * widechar_width.js
+ * widechar_width.js for Unicode 14.0.0
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
- *  generate.py:         1e1b86363d41ac47b4812344fe6313dd77de8279
- *  template.js:         93220a99ef778f00e273bf8aaf16f454aa7a0b41
+ *  generate.py:         2a3bcf61a23572f3fa35c93c192e9e1be7eeb559
+ *  template.js:         db3d7e768040ade081aff9aa7298cc056031a637
  *  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
  *  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
  *  emoji-data.txt:      3f0ec08c001c4bc6df0b07d01068fc73808bfb4c

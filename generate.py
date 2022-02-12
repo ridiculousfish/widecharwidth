@@ -347,6 +347,7 @@ def make_fields(
     fields = {
         "p": CPP_PREFIX,
         "filename": filename,
+        "unicode_version": VERSION,
         "generate_hash": generate_hash,
         "template_hash": template_hash,
         "unicode_hash": datas.unicode_hash,
