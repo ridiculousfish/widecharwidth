@@ -1,8 +1,10 @@
 /**
- * widechar_width.rs, generated on 2022-02-12.
+ * widechar_width.rs
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
+ *  generate.py:         1e1b86363d41ac47b4812344fe6313dd77de8279
+ *  template.rs:         d8e4f9bb935e738f193b9cb2c33df4d65d4c19b7
  *  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
  *  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
  *  emoji-data.txt:      3f0ec08c001c4bc6df0b07d01068fc73808bfb4c
