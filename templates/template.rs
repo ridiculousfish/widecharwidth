@@ -3,8 +3,16 @@
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
+ *  (
+ *  the hashes for generate.py and the template are git object hashes,
+ *  use `git log --all --find-object=<hash>` in the widecharwidth repository
+ *  to see which commit they correspond to,
+ *  or run `git hash-object` on the file to compare.
+ *  The other hashes are simple `sha1sum` style hashes.
+ *  )
+ *
  *  generate.py:         {generate_hash}
- *  template.rs:         {template_hash}
+ *  template.js:         {template_hash}
  *  UnicodeData.txt:     {unicode_hash}
  *  EastAsianWidth.txt:  {eaw_hash}
  *  emoji-data.txt:      {emoji_hash}

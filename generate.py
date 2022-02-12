@@ -367,10 +367,19 @@ def make_fields(
     return fields
 
 
+def gitobjecthash(data):
+    """Generate the git object hash of a bit of data
+    like `git hash-object`
+    """
+    h = hashlib.sha1()
+    h.update(b"blob %u\0" % len(data))
+    h.update(data)
+    return h.hexdigest()
+
 if __name__ == "__main__":
     with open(__file__, "rb") as oof:
         data = oof.read()
-    generate_hash = hashlib.sha1(data).hexdigest()
+    generate_hash = gitobjecthash(data)
     datas = read_datas()
     cps = make_codepoints(datas)
     langs = {
@@ -381,7 +390,7 @@ if __name__ == "__main__":
     for suffix, settings in langs.items():
         with open("templates/template" + suffix) as templatefile:
             template = templatefile.read()
-            template_hash = hashlib.sha1(template.encode("utf-8")).hexdigest()
+            template_hash = gitobjecthash(template.encode("utf-8"))
             output = "widechar_width" + suffix
             fields = make_fields(
                 datas, cps, LangSettings(settings), template_hash, generate_hash, output
