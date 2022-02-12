@@ -236,7 +236,7 @@ def set_emoji_widths(emoji_data_lines, cps):
     for line in emoji_data_lines:
         for (cp, version, prop) in parse_emoji_line(line):
             # The Regional Indicators are special
-            if cp in range(0x1f1e6, 0x1f200):
+            if cp in range(0x1F1E6, 0x1F200):
                 continue
 
             # We only care about emoji *presentation*.
@@ -247,6 +247,7 @@ def set_emoji_widths(emoji_data_lines, cps):
                 # The version we get here is the *Emoji* version.
                 # Before Unicode 11 this was different, Unicode 9 shipped with Emoji 3.0.
                 cps[cp].width = 2 if version >= 3.0 else WIDTH_WIDENED_IN_9
+
 
 def set_hardcoded_ranges(cps):
     """Mark private use and surrogate codepoints"""
