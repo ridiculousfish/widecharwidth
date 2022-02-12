@@ -3,8 +3,16 @@
  * See https://github.com/ridiculousfish/widecharwidth/
  *
  * SHA1 file hashes:
- *  generate.py:         2a3bcf61a23572f3fa35c93c192e9e1be7eeb559
- *  template.rs:         675961b58c767f6c25eaa66f2489c7d46a6bd129
+ *  (
+ *  the hashes for generate.py and the template are git object hashes,
+ *  use `git log --all --find-object=<hash>` in the widecharwidth repository
+ *  to see which commit they correspond to,
+ *  or run `git hash-object` on the file to compare.
+ *  The other hashes are simple `sha1sum` style hashes.
+ *  )
+ *
+ *  generate.py:         90303b8633e230ffeddbed07c294d0c2c0b317d8
+ *  template.js:         155382626d7f69119cc981aeec4bb115b516a7a0
  *  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
  *  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
  *  emoji-data.txt:      3f0ec08c001c4bc6df0b07d01068fc73808bfb4c
