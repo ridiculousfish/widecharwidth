@@ -1,61 +1,71 @@
-/**
- * widechar_width.rs for Unicode 14.0.0
- * See https://github.com/ridiculousfish/widecharwidth/
- *
- * SHA1 file hashes:
- *  (
- *  the hashes for generate.py and the template are git object hashes,
- *  use `git log --all --find-object=<hash>` in the widecharwidth repository
- *  to see which commit they correspond to,
- *  or run `git hash-object` on the file to compare.
- *  The other hashes are simple `sha1sum` style hashes.
- *  )
- *
- *  generate.py:         4dc82efc75ba2c3e77ffb9832dd78559f3c02e10
- *  template.js:         155382626d7f69119cc981aeec4bb115b516a7a0
- *  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
- *  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
- *  emoji-data.txt:      3f0ec08c001c4bc6df0b07d01068fc73808bfb4c
- */
+# widechar_width.py for Unicode 14.0.0
+# See https://github.com/ridiculousfish/widecharwidth/
+#
+# SHA1 file hashes:
+#  (
+#  the hashes for generate.py and the template are git object hashes,
+#  use `git log --all --find-object=<hash>` in the widecharwidth repository
+#  to see which commit they correspond to,
+#  or run `git hash-object` on the file to compare.
+#  The other hashes are simple `sha1sum` style hashes.
+#  )
+#
+#  generate.py:         4dc82efc75ba2c3e77ffb9832dd78559f3c02e10
+#  template.js:         e41a73aa3593bba724d87ad7eb3c66635ba17e6c
+#  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
+#  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
+#  emoji-data.txt:      3f0ec08c001c4bc6df0b07d01068fc73808bfb4c
 
-type R = (u32, u32);
+from typing import Union
+from enum import IntEnum
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum WcWidth {
-  /// The character is single-width
-  One,
-  /// The character is double-width
-  Two,
-  /// The character is not printable.
-  NonPrint,
-  /// The character is a zero-width combiner.
-  Combining,
-  /// The character is East-Asian ambiguous width.
-  Ambiguous,
-  /// The character is for private use.
-  PrivateUse,
-  /// The character is unassigned.
-  Unassigned,
-  /// Width is 1 in Unicode 8, 2 in Unicode 9+.
-  WidenedIn9,
-  /// The character is a noncharacter.
-  NonCharacter,
-}
+# Special width values
+class Special(IntEnum):
+    nonprint = -1  # The character is not printable.
+    combining = -2  # The character is a zero-width combiner.
+    ambiguous = -3  # The character is East-Asian ambiguous width.
+    private_use = -4  # The character is for private use.
+    unassigned = -5  # The character is unassigned.
+    widened_in_9 = -6  # Width is 1 in Unicode 8, 2 in Unicode 9+.
+    non_character = -7  # The character is a noncharacter.
 
-/// Simple ASCII characters - used a lot, so we check them first.
-const ASCII_TABLE: &'static [R] = &[
+
+class Codepointrange:
+    def __init__(self, *ranges):
+        self.ranges = sorted(ranges)
+
+    def __contains__(self, char):
+        left = 0
+        right = len(self.ranges) - 1
+        if char < self.ranges[0][0] or char > self.ranges[right][1]:
+            return False
+
+        while right >= left:
+            middle = (left + right) // 2
+
+            if char < self.ranges[middle][0]:
+                right = middle - 1
+            elif char > self.ranges[middle][1]:
+                left = middle + 1
+            else:
+                return True
+        return False
+
+
+# Simple ASCII characters - used a lot, so we check them first.
+ascii_table = Codepointrange(
     (0x00020, 0x0007E)
-];
+)
 
-/// Private usage range.
-const PRIVATE_TABLE: &'static [R] = &[
+# Private usage range.
+private_table = Codepointrange(
     (0x0E000, 0x0F8FF),
     (0xF0000, 0xFFFFD),
     (0x100000, 0x10FFFD)
-];
+)
 
-/// Nonprinting characters.
-const NONPRINT_TABLE: &'static [R] = &[
+# Nonprinting characters.
+nonprint_table = Codepointrange(
     (0x00000, 0x0001F),
     (0x0007F, 0x0009F),
     (0x000AD, 0x000AD),
@@ -80,10 +90,10 @@ const NONPRINT_TABLE: &'static [R] = &[
     (0x1D173, 0x1D17A),
     (0xE0001, 0xE0001),
     (0xE0020, 0xE007F)
-];
+)
 
-/// Width 0 combining marks.
-const COMBINING_TABLE: &'static [R] = &[
+# Width 0 combining marks.
+combining_table = Codepointrange(
     (0x00300, 0x0036F),
     (0x00483, 0x00489),
     (0x00591, 0x005BD),
@@ -383,16 +393,16 @@ const COMBINING_TABLE: &'static [R] = &[
     (0x1E8D0, 0x1E8D6),
     (0x1E944, 0x1E94A),
     (0xE0100, 0xE01EF)
-];
+)
 
-/// Width 0 combining letters.
-const COMBININGLETTERS_TABLE: &'static [R] = &[
+# Width 0 combining letters.
+combiningletters_table = Codepointrange(
     (0x01160, 0x011FF),
     (0x0D7B0, 0x0D7FF)
-];
+)
 
-/// Width 2 characters.
-const DOUBLEWIDE_TABLE: &'static [R] = &[
+# Width.2 characters.
+doublewide_table = Codepointrange(
     (0x01100, 0x0115F),
     (0x02329, 0x0232A),
     (0x02E80, 0x02E99),
@@ -465,10 +475,10 @@ const DOUBLEWIDE_TABLE: &'static [R] = &[
     (0x1FAF0, 0x1FAF6),
     (0x20000, 0x2FFFD),
     (0x30000, 0x3FFFD)
-];
+)
 
-/// Ambiguous-width characters.
-const AMBIGUOUS_TABLE: &'static [R] = &[
+# Ambiguous-width characters.
+ambiguous_table = Codepointrange(
     (0x000A1, 0x000A1),
     (0x000A4, 0x000A4),
     (0x000A7, 0x000A8),
@@ -648,10 +658,10 @@ const AMBIGUOUS_TABLE: &'static [R] = &[
     (0xE0100, 0xE01EF),
     (0xF0000, 0xFFFFD),
     (0x100000, 0x10FFFD)
-];
+)
 
-/// Unassigned characters.
-const UNASSIGNED_TABLE: &'static [R] = &[
+# Unassigned characters.
+unassigned_table = Codepointrange(
     (0x00378, 0x00379),
     (0x00380, 0x00383),
     (0x0038B, 0x0038B),
@@ -1368,10 +1378,10 @@ const UNASSIGNED_TABLE: &'static [R] = &[
     (0xE0002, 0xE001F),
     (0xE0080, 0xE00FF),
     (0xE01F0, 0xEFFFD)
-];
+)
 
-/// Non-characters.
-const NONCHAR_TABLE: &'static [R] = &[
+# Non-characters.
+nonchar_table = Codepointrange(
     (0x0FDD0, 0x0FDEF),
     (0x0FFFE, 0x0FFFF),
     (0x1FFFE, 0x1FFFF),
@@ -1390,10 +1400,10 @@ const NONCHAR_TABLE: &'static [R] = &[
     (0xEFFFE, 0xEFFFF),
     (0xFFFFE, 0xFFFFF),
     (0x10FFFE, 0x10FFFF)
-];
+)
 
-/// Characters that were widened from width 1 to 2 in Unicode 9.
-const WIDENED_TABLE: &'static [R] = &[
+# Characters that were widened from width 1 to 2 in Unicode 9.
+widened_table = Codepointrange(
     (0x0231A, 0x0231B),
     (0x023E9, 0x023EC),
     (0x023F0, 0x023F0),
@@ -1460,84 +1470,38 @@ const WIDENED_TABLE: &'static [R] = &[
     (0x1F910, 0x1F918),
     (0x1F980, 0x1F984),
     (0x1F9C0, 0x1F9C0)
-];
+)
 
-fn in_table(arr: &[R], c: u32) -> bool {
-    arr.binary_search_by(|(start, end)| if c >= *start && c <= *end {
-        std::cmp::Ordering::Equal
-    } else {
-        start.cmp(&c)
-    }).is_ok()
-}
 
-impl WcWidth {
-    /// Return the width of character c
-    pub fn from_char(c: char) -> Self {
-        let c = c as u32;
-        if in_table(&ASCII_TABLE, c) {
-            return Self::One;
-        }
-        if in_table(&PRIVATE_TABLE, c) {
-            return Self::PrivateUse;
-        }
-        if in_table(&NONPRINT_TABLE, c) {
-            return Self::NonPrint;
-        }
-        if in_table(&NONCHAR_TABLE, c) {
-            return Self::NonCharacter;
-        }
-        if in_table(&COMBINING_TABLE, c) {
-            return Self::Combining;
-        }
-        if in_table(&COMBININGLETTERS_TABLE, c) {
-            return Self::Combining;
-        }
-        if in_table(&DOUBLEWIDE_TABLE, c) {
-            return Self::Two;
-        }
-        if in_table(&AMBIGUOUS_TABLE, c) {
-            return Self::Ambiguous;
-        }
-        if in_table(&UNASSIGNED_TABLE, c) {
-            return Self::Unassigned;
-        }
-        if in_table(&WIDENED_TABLE, c) {
-            return Self::WidenedIn9;
-        }
-        Self::One
-    }
+# Return the width of character c, or a special negative value.
+def wcwidth(c: Union[str, int]) -> Union[int, Special]:
+    if isinstance(c, str):
+        try:
+            c = ord(c)
+        except:
+            raise ValueError("Argument must be a codepoint as a string or int")
+    elif c > 0x10FFFF:
+        raise ValueError("Argument is too big for Unicode")
 
-    /// Returns width for applications that are using unicode 8 or earlier
-    pub fn width_unicode_8_or_earlier(self) -> u8 {
-        match self {
-            Self::One => 1,
-            Self::Two => 2,
-            Self::NonPrint | Self::Combining | Self::Unassigned | Self::NonCharacter => 0,
-            Self::Ambiguous | Self::PrivateUse => 1,
-            Self::WidenedIn9 => 1,
-        }
-    }
-
-    /// Returns width for applications that are using unicode 9 or later
-    pub fn width_unicode_9_or_later(self) -> u8 {
-        if self == Self::WidenedIn9 {
-            return 2;
-        }
-        self.width_unicode_8_or_earlier()
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn basics() {
-        assert_eq!(WcWidth::from_char('w'), WcWidth::One);
-        assert_eq!(WcWidth::from_char('\x1f'), WcWidth::NonPrint);
-        assert_eq!(WcWidth::from_char('\u{e001}'), WcWidth::PrivateUse);
-        assert_eq!(WcWidth::from_char('\u{2716}'), WcWidth::One);
-        assert_eq!(WcWidth::from_char('\u{270a}'), WcWidth::WidenedIn9);
-        assert_eq!(WcWidth::from_char('\u{3fffd}'), WcWidth::Two);
-    }
-}
+            
+    if c in ascii_table:
+        return 1
+    if c in private_table:
+        return Special.private_use
+    if c in nonprint_table:
+        return Special.nonprint
+    if c in nonchar_table:
+        return Special.non_character
+    if c in combining_table:
+        return Special.combining
+    if c in combiningletters_table:
+        return Special.combining
+    if c in doublewide_table:
+        return 2
+    if c in ambiguous_table:
+        return Special.ambiguous
+    if c in unassigned_table:
+        return Special.unassigned
+    if c in widened_table:
+        return Special.widened_in_9
+    return 1
