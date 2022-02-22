@@ -52,55 +52,48 @@ class Codepointrange:
         return False
 
 
-# Simple ASCII characters - used a lot, so we check them first.
-ascii_table = Codepointrange(
-    {ascii}
-)
-
-# Private usage range.
-private_table = Codepointrange(
-    {private}
-)
-
-# Nonprinting characters.
-nonprint_table = Codepointrange(
-    {nonprint}
-)
-
-# Width 0 combining marks.
-combining_table = Codepointrange(
-    {combining}
-)
-
-# Width 0 combining letters.
-combiningletters_table = Codepointrange(
-    {combiningletters}
-)
-
-# Width.2 characters.
-doublewide_table = Codepointrange(
-    {doublewide}
-)
-
-# Ambiguous-width characters.
-ambiguous_table = Codepointrange(
-    {ambiguous}
-)
-
-# Unassigned characters.
-unassigned_table = Codepointrange(
-    {unassigned}
-)
-
-# Non-characters.
-nonchar_table = Codepointrange(
-    {noncharacters}
-)
-
-# Characters that were widened from width 1 to 2 in Unicode 9.
-widened_table = Codepointrange(
-    {widenedin9}
-)
+_TABLE = {{
+    # Simple ASCII characters - used a lot, so we check them first.
+    "ascii": Codepointrange(
+        {ascii}
+    ),
+    # Private usage range.
+    "private": Codepointrange(
+        {private}
+    ),
+    # Nonprinting characters.
+    "nonprint": Codepointrange(
+        {nonprint}
+    ),
+    # Width 0 combining marks.
+    "combining": Codepointrange(
+        {combining}
+    ),
+    # Width 0 combining letters.
+    "combiningletters": Codepointrange(
+        {combiningletters}
+    ),
+    # Width 2 characters.
+    "doublewide": Codepointrange(
+        {doublewide}
+    ),
+    # Ambiguous-width characters.
+    "ambiguous": Codepointrange(
+        {ambiguous}
+    ),
+    # Unassigned characters.
+    "unassigned": Codepointrange(
+        {unassigned}
+    ),
+    # Non-characters.
+    "nonchar": Codepointrange(
+        {noncharacters}
+    ),
+    # Characters that were widened from width 1 to 2 in Unicode 9.
+    "widened": Codepointrange(
+        {widenedin9}
+    ),
+}}
 
 
 # Return the width of character c, or a special negative value.
@@ -113,24 +106,24 @@ def wcwidth(c: Union[str, int]) -> Union[int, Special]:
     elif c > 0x10FFFF:
         raise ValueError("Argument is too big for Unicode")
 
-    if c in ascii_table:
+    if c in _TABLE["ascii"]:
         return 1
-    if c in private_table:
+    if c in _TABLE["private"]:
         return Special.private_use
-    if c in nonprint_table:
+    if c in _TABLE["nonprint"]:
         return Special.nonprint
-    if c in nonchar_table:
+    if c in _TABLE["nonchar"]:
         return Special.non_character
-    if c in combining_table:
+    if c in _TABLE["combining"]:
         return Special.combining
-    if c in combiningletters_table:
+    if c in _TABLE["combiningletters"]:
         return Special.combining
-    if c in doublewide_table:
+    if c in _TABLE["doublewide"]:
         return 2
-    if c in ambiguous_table:
+    if c in _TABLE["ambiguous"]:
         return Special.ambiguous
-    if c in unassigned_table:
+    if c in _TABLE["unassigned"]:
         return Special.unassigned
-    if c in widened_table:
+    if c in _TABLE["widened"]:
         return Special.widened_in_9
     return 1
