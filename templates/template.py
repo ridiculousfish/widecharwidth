@@ -11,7 +11,7 @@
 #  )
 #
 #  generate.py:         {generate_hash}
-#  template.js:         {template_hash}
+#  template.py:         {template_hash}
 #  UnicodeData.txt:     {unicode_hash}
 #  EastAsianWidth.txt:  {eaw_hash}
 #  emoji-data.txt:      {emoji_hash}
