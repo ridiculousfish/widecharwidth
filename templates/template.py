@@ -23,6 +23,17 @@ from enum import IntEnum
 
 # Special width values
 class Special(IntEnum):
+    """The special values that wcwidth returns. Guaranteed to be negative.
+
+    nonprint = -1      : The character is not printable.
+    combining = -2     : The character is a zero-width combiner.
+    ambiguous = -3     : The character is East-Asian ambiguous width.
+    private_use = -4   : The character is for private use.
+    unassigned = -5    : The character is unassigned.
+    widened_in_9 = -6  : Width is 1 in Unicode 8, 2 in Unicode 9+.
+    non_character = -7 : The character is a noncharacter.
+    """
+
     nonprint = -1  # The character is not printable.
     combining = -2  # The character is a zero-width combiner.
     ambiguous = -3  # The character is East-Asian ambiguous width.
@@ -33,6 +44,8 @@ class Special(IntEnum):
 
 
 class Codepointrange:
+    """A list of ranges of codepoints."""
+
     def __init__(self, *ranges):
         self.ranges = sorted(ranges)
 
@@ -100,6 +113,10 @@ _TABLE = {{
 
 # Return the width of character c, or a special negative value.
 def wcwidth(c: Union[str, int]) -> Union[int, Special]:
+    """Given a Unicode codepoint as a string or int,
+    returns the number of cells it should occupy in fixed-cell rendering like in a terminal,
+    or a negative special value (from the `Special` enum) to be handled outside.
+    """
     if isinstance(c, str):
         try:
             c = ord(c)
