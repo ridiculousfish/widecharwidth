@@ -385,8 +385,8 @@ if __name__ == "__main__":
     langs = {
         ".h": "{}",
         ".js": "[]",
-        ".rs": "()",
         ".py": "()",
+        ".rs": "()",
     }
     for suffix, settings in langs.items():
         with open("templates/template" + suffix) as templatefile:
