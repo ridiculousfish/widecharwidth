@@ -33,7 +33,7 @@ The JS file `widechar_width.js` contains the function `widechar_wcwidth()`. This
 
 The values are the same as the other implementations, so you can compare them as int, or you can use it as an enum.
 
-`wcwidth` takes either a len-1 string or an int representing the codepoint (like you would get via `ord("f")`).
+`wcwidth` takes either a string consisting of exactly one codepoint or an int representing the codepoint (like you would get via `ord("f")`).
 
 ```python
 from widechar_width import wcwidth, Special
