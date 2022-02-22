@@ -48,6 +48,8 @@ else:
     return width
 ```
 
+The generated script should work with python 3.5+.
+
 ## Rust usage
 
 In Rust, use `widechar_width.rs` and match `WcWidth::from_char()`. Example:
