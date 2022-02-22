@@ -10,11 +10,13 @@
 #  The other hashes are simple `sha1sum` style hashes.
 #  )
 #
-#  generate.py:         4dc82efc75ba2c3e77ffb9832dd78559f3c02e10
-#  template.js:         e41a73aa3593bba724d87ad7eb3c66635ba17e6c
+#  generate.py:         a36e85a5d6b5cd774c8266e4f050ca392a510bc2
+#  template.py:         5fd2e0eec8bab81e8ae8af8d0e4632f4a1113525
 #  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
 #  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
 #  emoji-data.txt:      3f0ec08c001c4bc6df0b07d01068fc73808bfb4c
+
+__all__ = ['wcwidth', 'Special']
 
 from typing import Union
 from enum import IntEnum
@@ -52,21 +54,20 @@ class Codepointrange:
         return False
 
 
-# Simple ASCII characters - used a lot, so we check them first.
-ascii_table = Codepointrange(
-    (0x00020, 0x0007E)
-)
-
-# Private usage range.
-private_table = Codepointrange(
-    (0x0E000, 0x0F8FF),
+_TABLE = {
+    # Simple ASCII characters - used a lot, so we check them first.
+    "ascii": Codepointrange(
+        (0x00020, 0x0007E)
+    ),
+    # Private usage range.
+    "private": Codepointrange(
+        (0x0E000, 0x0F8FF),
     (0xF0000, 0xFFFFD),
     (0x100000, 0x10FFFD)
-)
-
-# Nonprinting characters.
-nonprint_table = Codepointrange(
-    (0x00000, 0x0001F),
+    ),
+    # Nonprinting characters.
+    "nonprint": Codepointrange(
+        (0x00000, 0x0001F),
     (0x0007F, 0x0009F),
     (0x000AD, 0x000AD),
     (0x00600, 0x00605),
@@ -90,11 +91,10 @@ nonprint_table = Codepointrange(
     (0x1D173, 0x1D17A),
     (0xE0001, 0xE0001),
     (0xE0020, 0xE007F)
-)
-
-# Width 0 combining marks.
-combining_table = Codepointrange(
-    (0x00300, 0x0036F),
+    ),
+    # Width 0 combining marks.
+    "combining": Codepointrange(
+        (0x00300, 0x0036F),
     (0x00483, 0x00489),
     (0x00591, 0x005BD),
     (0x005BF, 0x005BF),
@@ -393,17 +393,15 @@ combining_table = Codepointrange(
     (0x1E8D0, 0x1E8D6),
     (0x1E944, 0x1E94A),
     (0xE0100, 0xE01EF)
-)
-
-# Width 0 combining letters.
-combiningletters_table = Codepointrange(
-    (0x01160, 0x011FF),
+    ),
+    # Width 0 combining letters.
+    "combiningletters": Codepointrange(
+        (0x01160, 0x011FF),
     (0x0D7B0, 0x0D7FF)
-)
-
-# Width.2 characters.
-doublewide_table = Codepointrange(
-    (0x01100, 0x0115F),
+    ),
+    # Width 2 characters.
+    "doublewide": Codepointrange(
+        (0x01100, 0x0115F),
     (0x02329, 0x0232A),
     (0x02E80, 0x02E99),
     (0x02E9B, 0x02EF3),
@@ -475,11 +473,10 @@ doublewide_table = Codepointrange(
     (0x1FAF0, 0x1FAF6),
     (0x20000, 0x2FFFD),
     (0x30000, 0x3FFFD)
-)
-
-# Ambiguous-width characters.
-ambiguous_table = Codepointrange(
-    (0x000A1, 0x000A1),
+    ),
+    # Ambiguous-width characters.
+    "ambiguous": Codepointrange(
+        (0x000A1, 0x000A1),
     (0x000A4, 0x000A4),
     (0x000A7, 0x000A8),
     (0x000AA, 0x000AA),
@@ -658,11 +655,10 @@ ambiguous_table = Codepointrange(
     (0xE0100, 0xE01EF),
     (0xF0000, 0xFFFFD),
     (0x100000, 0x10FFFD)
-)
-
-# Unassigned characters.
-unassigned_table = Codepointrange(
-    (0x00378, 0x00379),
+    ),
+    # Unassigned characters.
+    "unassigned": Codepointrange(
+        (0x00378, 0x00379),
     (0x00380, 0x00383),
     (0x0038B, 0x0038B),
     (0x0038D, 0x0038D),
@@ -1378,11 +1374,10 @@ unassigned_table = Codepointrange(
     (0xE0002, 0xE001F),
     (0xE0080, 0xE00FF),
     (0xE01F0, 0xEFFFD)
-)
-
-# Non-characters.
-nonchar_table = Codepointrange(
-    (0x0FDD0, 0x0FDEF),
+    ),
+    # Non-characters.
+    "nonchar": Codepointrange(
+        (0x0FDD0, 0x0FDEF),
     (0x0FFFE, 0x0FFFF),
     (0x1FFFE, 0x1FFFF),
     (0x2FFFE, 0x2FFFF),
@@ -1400,11 +1395,10 @@ nonchar_table = Codepointrange(
     (0xEFFFE, 0xEFFFF),
     (0xFFFFE, 0xFFFFF),
     (0x10FFFE, 0x10FFFF)
-)
-
-# Characters that were widened from width 1 to 2 in Unicode 9.
-widened_table = Codepointrange(
-    (0x0231A, 0x0231B),
+    ),
+    # Characters that were widened from width 1 to 2 in Unicode 9.
+    "widened": Codepointrange(
+        (0x0231A, 0x0231B),
     (0x023E9, 0x023EC),
     (0x023F0, 0x023F0),
     (0x023F3, 0x023F3),
@@ -1470,7 +1464,8 @@ widened_table = Codepointrange(
     (0x1F910, 0x1F918),
     (0x1F980, 0x1F984),
     (0x1F9C0, 0x1F9C0)
-)
+    ),
+}
 
 
 # Return the width of character c, or a special negative value.
@@ -1483,25 +1478,24 @@ def wcwidth(c: Union[str, int]) -> Union[int, Special]:
     elif c > 0x10FFFF:
         raise ValueError("Argument is too big for Unicode")
 
-            
-    if c in ascii_table:
+    if c in _TABLE["ascii"]:
         return 1
-    if c in private_table:
+    if c in _TABLE["private"]:
         return Special.private_use
-    if c in nonprint_table:
+    if c in _TABLE["nonprint"]:
         return Special.nonprint
-    if c in nonchar_table:
+    if c in _TABLE["nonchar"]:
         return Special.non_character
-    if c in combining_table:
+    if c in _TABLE["combining"]:
         return Special.combining
-    if c in combiningletters_table:
+    if c in _TABLE["combiningletters"]:
         return Special.combining
-    if c in doublewide_table:
+    if c in _TABLE["doublewide"]:
         return 2
-    if c in ambiguous_table:
+    if c in _TABLE["ambiguous"]:
         return Special.ambiguous
-    if c in unassigned_table:
+    if c in _TABLE["unassigned"]:
         return Special.unassigned
-    if c in widened_table:
+    if c in _TABLE["widened"]:
         return Special.widened_in_9
     return 1

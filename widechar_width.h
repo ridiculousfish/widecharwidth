@@ -11,7 +11,7 @@
  *  The other hashes are simple `sha1sum` style hashes.
  *  )
  *
- *  generate.py:         4dc82efc75ba2c3e77ffb9832dd78559f3c02e10
+ *  generate.py:         a36e85a5d6b5cd774c8266e4f050ca392a510bc2
  *  template.js:         1249763c5b7c1e308aeb4ca64f1e15bce1fab9b3
  *  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
  *  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
