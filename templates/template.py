@@ -19,10 +19,10 @@
 __all__ = ['wcwidth', 'Special']
 
 from typing import Union
-from enum import IntEnum
+from enum import Enum
 
 # Special width values
-class Special(IntEnum):
+class Special(Enum):
     """The special values that wcwidth returns. Guaranteed to be negative.
 
     nonprint = -1      : The character is not printable.
