@@ -378,6 +378,7 @@ def gitobjecthash(data):
     h.update(data)
     return h.hexdigest()
 
+
 if __name__ == "__main__":
     with open(__file__, "rb") as oof:
         data = oof.read()
@@ -397,7 +398,12 @@ if __name__ == "__main__":
             template_hash = gitobjecthash(template.encode("utf-8"))
             output = "widechar_width" + suffix
             fields = make_fields(
-                datas, cps, LangSettings(*settings), template_hash, generate_hash, output
+                datas,
+                cps,
+                LangSettings(*settings),
+                template_hash,
+                generate_hash,
+                output,
             )
             with open(output, "w") as fd:
                 fd.write(template.strip().format(**fields))
