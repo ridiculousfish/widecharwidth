@@ -39,13 +39,14 @@ The values are the same as the other implementations, so you can compare them as
 from widechar_width import wcwidth, Special
 
 width = wcwidth(c)
-if width == Special.ambiguous:
-    return 1
-elif width == Special.private_use:
-    return 0
-...
-else:
+# wcwidth returns an int for normal codepoints with a specific width
+if isinstance(width, int):
     return width
+# and one of the "Special" values otherwise.
+elif width == Special.ambiguous or width == Special.private_use:
+    return 1
+elif width == Special.widened_in_9:
+    return 2
 ```
 
 The generated script should work with python 3.5+.
