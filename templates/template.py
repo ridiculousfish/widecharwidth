@@ -16,7 +16,7 @@
 #  EastAsianWidth.txt:  {eaw_hash}
 #  emoji-data.txt:      {emoji_hash}
 
-__all__ = ['wcwidth', 'Special']
+__all__ = ["wcwidth", "Special"]
 
 from typing import Union
 from enum import Enum
