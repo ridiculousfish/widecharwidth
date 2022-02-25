@@ -68,6 +68,8 @@ class CodePoint(object):  # pylint: disable=too-few-public-methods
 # Settings controlling language output.
 class LangSettings(NamedTuple):
     range_chars: str  # open/close characters for ranges, like "{}"
+    indentation: str = "    "
+    keep_last: bool = False
 
 
 # Data parsed from unicode.org datafiles.
@@ -129,14 +131,14 @@ def merged_codepoints(cps: Iterable[CodePoint]):
     return ranges
 
 
-def gen_seps(length):
+def gen_seps(length, indentation, keep_last):
     """Yield separators for a table of given length"""
     table_columns = 1
     for idx in range(1, length + 1):
         if idx == length:
-            yield ""
+            yield "" if not keep_last else ","
         elif idx % table_columns == 0:
-            yield ",\n    "
+            yield ",\n" + indentation
         else:
             yield ", "
 
@@ -145,7 +147,7 @@ def codepoints_to_carray_str(settings: LangSettings, cps: Iterable[CodePoint]):
     """Given a list of codepoints, return a C array string representing their inclusive ranges."""
     result = ""
     ranges = merged_codepoints(cps)
-    seps = gen_seps(len(ranges))
+    seps = gen_seps(len(ranges), settings.indentation, settings.keep_last)
     for (start, end) in ranges:
         result += "%s%s, %s%s%s" % (
             settings.range_chars[0],
@@ -376,6 +378,7 @@ def gitobjecthash(data):
     h.update(data)
     return h.hexdigest()
 
+
 if __name__ == "__main__":
     with open(__file__, "rb") as oof:
         data = oof.read()
@@ -383,9 +386,11 @@ if __name__ == "__main__":
     datas = read_datas()
     cps = make_codepoints(datas)
     langs = {
-        ".h": "{}",
-        ".js": "[]",
-        ".rs": "()",
+        # Suffix: Braces, indentation, keep the last comma
+        ".h": ("{}",),
+        ".js": ("[]",),
+        ".py": ("()", "    " * 2, True),
+        ".rs": ("()",),
     }
     for suffix, settings in langs.items():
         with open("templates/template" + suffix) as templatefile:
@@ -393,7 +398,12 @@ if __name__ == "__main__":
             template_hash = gitobjecthash(template.encode("utf-8"))
             output = "widechar_width" + suffix
             fields = make_fields(
-                datas, cps, LangSettings(settings), template_hash, generate_hash, output
+                datas,
+                cps,
+                LangSettings(*settings),
+                template_hash,
+                generate_hash,
+                output,
             )
             with open(output, "w") as fd:
                 fd.write(template.strip().format(**fields))

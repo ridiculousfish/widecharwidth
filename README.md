@@ -1,4 +1,9 @@
-widecharwidth is a Python script that outputs implementations of `wcwidth()`, by downloading and parsing the latest `UnicodeData.txt`, `EastAsianWidth.txt`, and `emoji-data.txt`. Currently it generates C++, JavaScript, and Rust code.
+widecharwidth is a Python script that outputs implementations of `wcwidth()`, by downloading and parsing the latest `UnicodeData.txt`, `EastAsianWidth.txt`, and `emoji-data.txt`. Currently it generates code for:
+
+- C++
+- JavaScript
+- Python
+- Rust
 
 ## C++ Usage
 
@@ -21,6 +26,30 @@ If you aren't sure how to handle negative return values, try this table:
 ## JavaScript usage
 
 The JS file `widechar_width.js` contains the function `widechar_wcwidth()`. This behaves the same as the C++ version.
+
+## Python usage
+
+`widechar_width.py` contains the function `wcwidth` that returns either an int or a member of the `Special` IntEnum.
+
+The values are the same as the other implementations, so you can compare them as int, or you can use it as an enum.
+
+`wcwidth` takes either a string consisting of exactly one codepoint or an int representing the codepoint (like you would get via `ord("f")`).
+
+```python
+from widechar_width import wcwidth, Special
+
+width = wcwidth(c)
+# wcwidth returns an int for normal codepoints with a specific width
+if isinstance(width, int):
+    return width
+# and one of the "Special" values otherwise.
+elif width == Special.ambiguous or width == Special.private_use:
+    return 1
+elif width == Special.widened_in_9:
+    return 2
+```
+
+The generated script should work with python 3.5+.
 
 ## Rust usage
 
