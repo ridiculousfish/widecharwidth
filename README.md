@@ -29,7 +29,7 @@ The JS file `widechar_width.js` contains the function `widechar_wcwidth()`. This
 
 ## Python usage
 
-`widechar_width.py` contains the function `wcwidth` that returns either an int or a member of the `Special` IntEnum.
+`widechar_width.py` contains the function `wcwidth` that returns either an int or a member of the `Special` Enum.
 
 The values are the same as the other implementations, so you can compare them as int, or you can use it as an enum.
 
