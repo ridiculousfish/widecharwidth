@@ -11,7 +11,7 @@
 #  )
 #
 #  generate.py:         12c32cabd6e67ff1949b47396b33a3672a497889
-#  template.py:         f8cbc8b5f707aabde5dd41e9169391fbf510129f
+#  template.py:         60d5181aad5aa0388fa84e87ce6067101f866800
 #  UnicodeData.txt:     8a5c26bfb27df8cfab23cf2c34c62d8d3075ae4d
 #  EastAsianWidth.txt:  8ec36ccac3852bf0c2f02e37c6151551cd14db72
 #  emoji-data.txt:      3f0ec08c001c4bc6df0b07d01068fc73808bfb4c
@@ -52,7 +52,7 @@ class Codepointrange:
     def __contains__(self, char):
         left = 0
         right = len(self.ranges) - 1
-        if char < self.ranges[0][0] or char > self.ranges[right][1]:
+        if not self.ranges[0][0] <= char <= self.ranges[right][1]:
             return False
 
         while right >= left:
@@ -1490,10 +1490,10 @@ def wcwidth(c: Union[str, int]) -> Union[int, Special]:
     if isinstance(c, str):
         try:
             c = ord(c)
-        except:
+        except Exception:
             raise ValueError("Argument must be a codepoint as a string or int")
-    elif c > 0x10FFFF:
-        raise ValueError("Argument is too big for Unicode")
+    elif not 0 <= c <= 0x10FFFF:
+        raise ValueError("Argument is out of Unicode range")
 
     if c in _TABLE["ascii"]:
         return 1

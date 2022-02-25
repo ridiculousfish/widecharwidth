@@ -52,7 +52,7 @@ class Codepointrange:
     def __contains__(self, char):
         left = 0
         right = len(self.ranges) - 1
-        if char < self.ranges[0][0] or char > self.ranges[right][1]:
+        if not self.ranges[0][0] <= char <= self.ranges[right][1]:
             return False
 
         while right >= left:
@@ -120,10 +120,10 @@ def wcwidth(c: Union[str, int]) -> Union[int, Special]:
     if isinstance(c, str):
         try:
             c = ord(c)
-        except:
+        except Exception:
             raise ValueError("Argument must be a codepoint as a string or int")
-    elif c > 0x10FFFF:
-        raise ValueError("Argument is too big for Unicode")
+    elif not 0 <= c <= 0x10FFFF:
+        raise ValueError("Argument is out of Unicode range")
 
     if c in _TABLE["ascii"]:
         return 1
