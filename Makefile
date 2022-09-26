@@ -11,9 +11,9 @@ wcwidth9.h:
 rust: widechar_width.rs
 	rustc widechar_width.rs --crate-type lib --test
 	./widechar_width
-	
+
 tester: test.cpp widechar_width.h | wcwidth9.h
 	clang++ -std=c++11 test.cpp -o tester
 
 clean:
-	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth.txt widechar_width.h widechar_width.js tester
+	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth.txt widechar_width.h widechar_width.js widechar_width.rs widechar_width.py tester
