@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: © 2018 ridiculousfish and widecharwidth contributors
+//
+// SPDX-License-Identifier: CC0-1.0
+
 /**
  * widechar_width.h for Unicode 15.0.0
  * See https://github.com/ridiculousfish/widecharwidth/
