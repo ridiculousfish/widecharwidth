@@ -391,6 +391,7 @@ if __name__ == "__main__":
         ".js": ("[]",),
         ".py": ("()", "    " * 2, True),
         ".rs": ("()",),
+        ".java": ("{}", "    " * 2),
     }
     for suffix, settings in langs.items():
         with open("templates/template" + suffix) as templatefile:

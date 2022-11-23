@@ -10,7 +10,7 @@
 #  The other hashes are simple `sha1sum` style hashes.
 #  )
 #
-#  generate.py:         6d63502e0a28f40351524953141ea802a79dced9
+#  generate.py:         1d24de5a7caf6e8cc4e5a688ea83db972efe4538
 #  template.py:         60d5181aad5aa0388fa84e87ce6067101f866800
 #  UnicodeData.txt:     3e1900295af0978ad6be3153de4c97d55198ab4b
 #  EastAsianWidth.txt:  2637ce61d024cb25c768023fa4d7594b53474919
