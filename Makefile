@@ -1,7 +1,7 @@
 test: tester rust
 	./tester
 
-widechar_width.h widechar_width.js widechar_width.rs: generate.py
+widechar_width.h widechar_width.js widechar_width.rs widechar_width.py widechar_width.java: generate.py
 	./generate.py
 
 wcwidth9.h:
@@ -16,4 +16,4 @@ tester: test.cpp widechar_width.h | wcwidth9.h
 	clang++ -std=c++11 test.cpp -o tester
 
 clean:
-	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth.txt widechar_width.h widechar_width.js widechar_width.rs widechar_width.py tester
+	rm -f UnicodeData.txt emoji-data.txt EastAsianWidth.txt widechar_width.h widechar_width.js widechar_width.rs widechar_width.py widechar_width.java tester

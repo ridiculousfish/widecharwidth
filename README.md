@@ -4,6 +4,7 @@ widecharwidth is a Python script that outputs implementations of `wcwidth()`, by
 - JavaScript
 - Python
 - Rust
+- Java
 
 ## C++ Usage
 
@@ -13,15 +14,15 @@ This header contains a single public function `widechar_wcwidth()`. This returns
 
 If you aren't sure how to handle negative return values, try this table:
 
- | return value            | width |
- |-------------------------|---|
- | `widechar_nonprint`     | 0 |
- | `widechar_combining`    | 0 |
- | `widechar_ambiguous`    | 1 |
- | `widechar_private_use`  | 1 |
- | `widechar_unassigned`   | 0 |
- | `widechar_non_character`| 0 |
- | `widechar_widened_in_9` | 2 (or maybe 1, renderer dependent) |
+| return value             | width                              |
+|--------------------------|------------------------------------|
+| `widechar_nonprint`      | 0                                  |
+| `widechar_combining`     | 0                                  |
+| `widechar_ambiguous`     | 1                                  |
+| `widechar_private_use`   | 1                                  |
+| `widechar_unassigned`    | 0                                  |
+| `widechar_non_character` | 0                                  |
+| `widechar_widened_in_9`  | 2 (or maybe 1, renderer dependent) |
 
 ## JavaScript usage
 
@@ -61,6 +62,26 @@ match WcWidth::from_char(c) {
     WcWidth::Combining => (),          // zero-width combiner
     WcWidth::NonPrint => (),           // non-printing
     ...
+}
+```
+
+## Java usage
+
+For Java 8+, file `widechar_width.java` contains the `WcWidth` class definition, which you can use as follows:
+
+```java
+int width = WcWidth.Type.of(codePoint).defaultWidth();
+```
+
+The default values are based on the recommendations in the table of the C++ above.
+If you need a different width for some types, create your own wrapper method using something like:
+
+```java
+final WcWidth.Type type = WcWidth.Type.of(codePoint);
+switch (type) {
+    case WIDENED_IN_9: return 1;
+    ...
+    default: return type.defaultWidth();
 }
 ```
 
