@@ -12,7 +12,7 @@
  *  )
  *
  *  generate.py:         1d24de5a7caf6e8cc4e5a688ea83db972efe4538
- *  template.js:         81d7e9c034b63326d422dfe3fdf07e2b0cbec801
+ *  template.js:         f1eb301278dc1b554d7b6257b925b4c7a6fae438
  *  UnicodeData.txt:     3e1900295af0978ad6be3153de4c97d55198ab4b
  *  EastAsianWidth.txt:  2637ce61d024cb25c768023fa4d7594b53474919
  *  emoji-data.txt:      7754a51be6ebe38f906e4fe948720e0f3b78bfd7
@@ -1377,7 +1377,7 @@ const widechar_unassigned_table = [
 ];
 
 /* Non-characters. */
-const widechar_nonchar_table[] = [
+const widechar_nonchar_table = [
     [0x0FDD0, 0x0FDEF],
     [0x0FFFE, 0x0FFFF],
     [0x1FFFE, 0x1FFFF],
@@ -1399,7 +1399,7 @@ const widechar_nonchar_table[] = [
 ];
 
 /* Characters that were widened from width 1 to 2 in Unicode 9. */
-const widechar_widened_table[] = [
+const widechar_widened_table = [
     [0x0231A, 0x0231B],
     [0x023E9, 0x023EC],
     [0x023F0, 0x023F0],
@@ -1492,6 +1492,14 @@ function widechar_in_table(data, ucs) {
 
 /* Return the width of character c, or a special negative value. */
 function widechar_wcwidth(c) {
+    if (typeof c === "string")
+        c = c.codePointAt();    /* Checking for if there's only one code point? Too much code. */
+    else if (typeof c !== "number")
+        throw new TypeError("Argument must be an integer or a string.");
+    
+    if (c < 0 || c > 0x10FFFF)
+        throw new RangeError("Argument must be inside Unicode code point range (0-U+10FFFF).");
+
     if (widechar_in_table(widechar_ascii_table, c))
         return 1;
     if (widechar_in_table(widechar_private_table, c))
