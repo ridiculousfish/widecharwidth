@@ -68,12 +68,12 @@ const {p}unassigned_table = [
 ];
 
 /* Non-characters. */
-const {p}nonchar_table[] = [
+const {p}nonchar_table = [
     {noncharacters}
 ];
 
 /* Characters that were widened from width 1 to 2 in Unicode 9. */
-const {p}widened_table[] = [
+const {p}widened_table = [
     {widenedin9}
 ];
 
