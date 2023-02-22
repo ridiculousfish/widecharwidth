@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: © 2018 ridiculousfish and widecharwidth contributors
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 widecharwidth is a Python script that outputs implementations of `wcwidth()`, by downloading and parsing the latest `UnicodeData.txt`, `EastAsianWidth.txt`, and `emoji-data.txt`. Currently it generates code for:
 
 - C++

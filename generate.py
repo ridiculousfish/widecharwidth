@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# SPDX-FileCopyrightText: © 2018 ridiculousfish and widecharwidth contributors
+#
+# SPDX-License-Identifier: CC0-1.0
+
 """ Outputs the width file to stdout. """
 
 import datetime
