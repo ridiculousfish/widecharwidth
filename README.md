@@ -24,6 +24,10 @@ If you aren't sure how to handle negative return values, try this table:
 | `widechar_non_character` | 0                                  |
 | `widechar_widened_in_9`  | 2 (or maybe 1, renderer dependent) |
 
+## C Usage
+
+You may directly copy and use the included `widechar_width_c.h`.  Usage is otherwise the same as for C++.
+
 ## JavaScript usage
 
 The JS file `widechar_width.js` contains the function `widechar_wcwidth()`. This behaves the same as the C++ version.
