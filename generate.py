@@ -388,6 +388,7 @@ if __name__ == "__main__":
     langs = {
         # Suffix: Braces, indentation, keep the last comma
         ".h": ("{}",),
+        "_c.h": ("{}",),
         ".js": ("[]",),
         ".py": ("()", "    " * 2, True),
         ".rs": ("()",),

@@ -1,5 +1,9 @@
 #include "wcwidth9.h"
 #include "widechar_width.h"
+// To test C version, comment out the line above, comment in the lines below.
+// #include <stdio.h>
+// #include <wchar.h>
+// #include "widechar_width_c.h"
 
 // Return whether 'his' (wcwidth9) width is compatible with 'mine'
 // (widechar_width) size.
