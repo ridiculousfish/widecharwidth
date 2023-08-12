@@ -1,5 +1,8 @@
+#include <stdio.h>
+#include <wchar.h>
+
 #include "wcwidth9.h"
-#include "widechar_width.h"
+#include "widechar_width_c.h"
 
 // Return whether 'his' (wcwidth9) width is compatible with 'mine'
 // (widechar_width) size.
@@ -318,8 +321,8 @@ int run_tests(void) {
     int ret = 0;
     int max_cp = 0x10FFFF;
     for (int c = 0; c <= max_cp; c++) {
-        auto w1 = wcwidth9(c);
-        auto w2 = widechar_wcwidth(c);
+        int w1 = wcwidth9(c);
+        int w2 = widechar_wcwidth(c);
         if (compatible(w1, w2) || exceptional(c)) continue;
         printf("%04X: his %d, mine %d, system: %d\n", c, w1, w2, wcwidth(c));
         ret = EXIT_FAILURE;

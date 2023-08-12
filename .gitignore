@@ -3,7 +3,8 @@ EastAsianWidth.txt
 emoji-data.txt
 gen_unicode_tables.lua
 luas/
-tester
+tester_c
+tester_cpp
 wcwidth9.h
 .DS_Store
 .vscode
