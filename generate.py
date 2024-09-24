@@ -12,7 +12,7 @@ from collections.abc import Iterable
 from typing import NamedTuple
 from urllib.request import urlretrieve
 
-VERSION = "15.0.0"
+VERSION = "16.0.0"
 UNICODE_DATA_URL = "https://unicode.org/Public/%s/ucd/UnicodeData.txt" % VERSION
 EAW_URL = "https://unicode.org/Public/%s/ucd/EastAsianWidth.txt" % VERSION
 EMOJI_DATA_URL = "https://unicode.org/Public/%s/ucd/emoji/emoji-data.txt" % VERSION
@@ -177,11 +177,11 @@ def parse_eaw_line(eaw_line):
     fields = line.strip().split(";")
     if len(fields) != 2:
         return []
-    cps, width_type = fields
+    cps, width_type = [x.strip() for x in fields]
     # width_types:
     #  A: ambiguous, F: fullwidth, H: halfwidth,
     #  N: neutral, Na: east-asian Narrow
-    if width_type == "A":
+    if width_type in ["A"]:
         width = WIDTH_AMBIGUOUS_EASTASIAN
     elif width_type in ["F", "W"]:
         width = 2
