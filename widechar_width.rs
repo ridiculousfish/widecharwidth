@@ -1524,7 +1524,7 @@ const WIDENED_TABLE: &'static [R] = &[
 fn in_table(arr: &[R], c: u32) -> bool {
     arr.binary_search_by(|(start, end)| {
         if c >= *start && c <= *end {
-            std::cmp::Ordering::Equal
+            core::cmp::Ordering::Equal
         } else {
             start.cmp(&c)
         }
