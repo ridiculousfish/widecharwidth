@@ -10,6 +10,7 @@ wcwidth9.h:
 	wget https://raw.githubusercontent.com/joshuarubin/wcwidth9/master/wcwidth9.h
 
 rust: widechar_width.rs
+	rustfmt widechar_width.rs
 	rustc widechar_width.rs --crate-type lib --test
 	./widechar_width
 
