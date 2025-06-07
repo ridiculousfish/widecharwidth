@@ -1,5 +1,6 @@
-#include <stdio.h>
+#define _XOPEN_SOURCE
 #include <wchar.h>
+#include <stdio.h>
 
 #include "wcwidth9.h"
 #include "widechar_width_c.h"
