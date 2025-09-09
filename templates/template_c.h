@@ -98,14 +98,14 @@ static const struct {p}range {p}widened_table[] = {{
 
 static inline bool widechar_in_table(const struct {p}range* arr, size_t len, uint32_t c) {{
 
-    int lo=0;
-    int hi=len;
+    size_t lo=0;
+    size_t hi=len;
 
     if(c < arr[0].lo) return(0);
     if(c > arr[len-1].hi) return(0);
 
     while(1) {{
-        int mid = ((hi-lo)/2)+lo;
+        size_t mid = ((hi-lo)/2)+lo;
         if( (c >= arr[mid].lo) && (c <= arr[mid].hi)) {{
             return(1);
         }}
