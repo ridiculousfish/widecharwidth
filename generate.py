@@ -12,7 +12,7 @@ from collections.abc import Iterable
 from typing import NamedTuple
 from urllib.request import urlretrieve
 
-VERSION = "16.0.0"
+VERSION = "17.0.0"
 UNICODE_DATA_URL = "https://unicode.org/Public/%s/ucd/UnicodeData.txt" % VERSION
 EAW_URL = "https://unicode.org/Public/%s/ucd/EastAsianWidth.txt" % VERSION
 EMOJI_DATA_URL = "https://unicode.org/Public/%s/ucd/emoji/emoji-data.txt" % VERSION
